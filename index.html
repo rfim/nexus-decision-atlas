@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nexus Decision Atlas</title>
+<meta name="description" content="The 50 models of The Decision Book, redrawn and retold as analogies for your own data platform stack.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a schema-diagram field. Sticky stack bar on top, a "query" finder, then a grid of model cards,
+   each with a drawn diagram, a plain summary and a live analogy wired to the reader's stack. */
+:root{
+  --bg:#eef1f0;          /* cool drafting paper */
+  --panel:#fbfcfb;
+  --ink:#14302c;         /* deep teal ink */
+  --muted:#557069;
+  --line:#c9d4d1;
+  --accent:#d98a1c;      /* amber: the "signal" on the schematic */
+  --accent-soft:#f6e3c4;
+  --teal:#2f7c70;
+  --teal-soft:#d6e8e4;
+  --font-display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body:"IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius:10px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1917; --panel:#15221f; --ink:#e3eeeb; --muted:#93aca5; --line:#2a3d39;
+    --accent:#f0a640; --accent-soft:#3d2e17; --teal:#6cc2b2; --teal-soft:#1d3531; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1917; --panel:#15221f; --ink:#e3eeeb; --muted:#93aca5; --line:#2a3d39;
+  --accent:#f0a640; --accent-soft:#3d2e17; --teal:#6cc2b2; --teal-soft:#1d3531; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 var(--font-body);
+  background-image:radial-gradient(var(--line) 1px, transparent 1px);background-size:22px 22px;
+}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--font-display);text-wrap:balance;margin:0;line-height:1.1}
+.mono{font-family:var(--font-mono)}
+a{color:var(--teal)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Hero */
+header.hero{padding-block:48px 28px}
+.eyebrow{font:600 12px/1 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.hero h1{font-size:clamp(36px,6vw,68px);font-weight:800;letter-spacing:-.02em;margin-top:12px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{max-width:66ch;color:var(--muted);font-size:17px;margin:14px 0 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:20px;font:13px var(--font-mono);color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+
+/* Stack panel */
+.stack{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:22px}
+.stack-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.stack-head h2{font-size:22px}
+.stack-head p{margin:0;color:var(--muted);font-size:14px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 4px}
+.presets button,.chip{font:500 13px var(--font-body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer}
+.presets button:hover,.chip:hover{border-color:var(--teal)}
+.presets button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.pipeline{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:12px}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.field input{font:14px var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%}
+.field input:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-soft)}
+.field.wide{grid-column:1/-1}
+.flowline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px;font:12px var(--font-mono);color:var(--muted)}
+.flowline b{font-weight:600;color:var(--ink);background:var(--teal-soft);border-radius:5px;padding:2px 7px}
+.flowline i{font-style:normal;color:var(--accent)}
+
+/* Finder */
+.finder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-bottom:22px}
+@media (max-width:820px){.finder{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;min-width:0}
+.box h2{font-size:20px}
+.box p.hint{color:var(--muted);margin:4px 0 10px;font-size:14px}
+textarea{width:100%;min-height:86px;resize:vertical;font:14px/1.5 var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:10px}
+textarea:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-soft)}
+.matches{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:6px}
+.matches li a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);padding:7px 10px;border-radius:7px;border:1px solid var(--line)}
+.matches li a:hover{border-color:var(--accent)}
+.matches .num{font:600 12px var(--font-mono);color:var(--accent);min-width:2.2em}
+.matches .why{margin-left:auto;font:12px var(--font-mono);color:var(--muted);text-align:right}
+.samples{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.filters input[type=search]{flex:1 1 200px;font:14px var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;min-width:0}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.count{font:12px var(--font-mono);color:var(--muted);margin-top:10px}
+
+/* Cards */
+.section-title{display:flex;align-items:baseline;gap:12px;margin:34px 0 14px;flex-wrap:wrap}
+.section-title h2{font-size:28px}
+.section-title span{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+@media (max-width:420px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;scroll-margin-top:20px}
+.card:target{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.card-top{display:flex;gap:10px;align-items:baseline}
+.card-top .n{font:600 13px var(--font-mono);color:var(--accent)}
+.card h3{font-size:19px;font-weight:700}
+.card .q{font:italic 14px var(--font-body);color:var(--muted);margin:0}
+.card svg{width:100%;height:auto;max-width:100%;background:var(--bg);border-radius:7px;border:1px solid var(--line)}
+.card p{margin:0}
+.analogy{background:var(--teal-soft);border-radius:7px;padding:10px 12px;font-size:14px}
+.analogy .lab{display:block;font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:3px}
+mark{background:var(--accent-soft);color:var(--ink);border-radius:3px;padding:0 3px;font-weight:600}
+.move{font-size:14px}
+.move b{font:600 11px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-right:6px}
+.tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:auto}
+.tags span{font:11px var(--font-mono);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+
+/* SVG ink */
+svg .ln{stroke:var(--ink);fill:none;stroke-width:1.5}
+svg .ln2{stroke:var(--muted);fill:none;stroke-width:1;stroke-dasharray:3 3}
+svg .acc{fill:var(--accent)}
+svg .accs{stroke:var(--accent);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+svg .soft{fill:var(--teal-soft)}
+svg .asoft{fill:var(--accent-soft)}
+svg .tl{stroke:var(--teal);fill:none;stroke-width:2}
+svg .tf{fill:var(--teal)}
+svg .pf{fill:var(--panel)}
+svg text{fill:var(--ink);font:10px var(--font-mono)}
+svg text.m{fill:var(--muted);font-size:9px}
+svg text.b{font-weight:600}
+
+/* Outro */
+.yours{margin-top:40px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px}
+@media (max-width:820px){.yours{grid-template-columns:1fr}}
+.yours ol{margin:10px 0 0;padding-left:20px}
+.yours li{margin-bottom:6px}
+footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Decision models × data platform</div>
+    <h1>Nexus Decision <em>Atlas</em></h1>
+    <p>The fifty models from <i>The Decision Book</i> by Mikael Krogerus and Roman Tschäppeler, redrawn and summarised, with each one translated into a decision you will face while building a data platform. Type your own stack below and every analogy rewrites itself around your tools.</p>
+    <div class="legend" id="legend"></div>
+  </header>
+
+  <section class="stack" aria-labelledby="stack-h">
+    <div class="stack-head">
+      <h2 id="stack-h">Your stack</h2>
+      <p>Pre-filled with example tools. Replace them with yours; changes stay in this browser.</p>
+    </div>
+    <div class="presets" id="presets" role="group" aria-label="Example stacks"></div>
+    <div class="pipeline" id="fields"></div>
+    <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
+  </section>
+
+  <section class="finder">
+    <div class="box">
+      <h2>Which model fits my problem?</h2>
+      <p class="hint">Describe the decision in a sentence. Models are ranked by how well their purpose matches your words.</p>
+      <textarea id="problem" aria-label="Describe your decision"></textarea>
+      <div class="samples" id="samples"></div>
+      <ol class="matches" id="matches"></ol>
+    </div>
+    <div class="box">
+      <h2>Browse the models</h2>
+      <p class="hint">Filter by part of the book, by pipeline layer, or by name.</p>
+      <div class="filters">
+        <input type="search" id="search" placeholder="Search, e.g. matrix, risk, team" aria-label="Search models">
+      </div>
+      <div class="filters" id="secFilters" style="margin-top:10px" role="group" aria-label="Book part"></div>
+      <div class="filters" id="layerFilters" style="margin-top:10px" role="group" aria-label="Pipeline layer"></div>
+      <div class="count" id="count"></div>
+    </div>
+  </section>
+
+  <main id="models"></main>
+
+  <section class="yours">
+    <div class="box">
+      <div class="eyebrow">Model 51 · World's next top model</div>
+      <h2 style="margin-top:8px">Draw your own Nexus model</h2>
+      <p class="hint">The book ends by asking you to make your own model. For a data platform, the pattern is the same:</p>
+      <ol>
+        <li>Pick the one decision you keep having to make (which source to onboard next, which table to deprecate).</li>
+        <li>Name the two forces that really drive it. Those are your axes.</li>
+        <li>Plot the last ten real cases on it. If they cluster, you have a rule; write it down in the platform handbook.</li>
+        <li>Re-plot every quarter. A model that never moves anything is decoration.</li>
+      </ol>
+    </div>
+    <div class="box">
+      <h2>Your axes, drawn</h2>
+      <p class="hint">Name two forces and four outcomes.</p>
+      <div class="pipeline" id="ownFields" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
+      <div id="ownDiagram" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <footer>
+    Summaries and drawings are original retellings for study. The models belong to their original authors (Eisenhower, Gartner, Csikszentmihalyi, Maslow, Reason, Moore, Taleb and others) and are collected in <i>The Decision Book: Fifty Models for Strategic Thinking</i> (Krogerus &amp; Tschäppeler, Profile Books / W. W. Norton). Model names follow the English edition; some editions differ.
+  </footer>
+</div>
+
+<script>
+(() => {
+const SECTIONS = {
+  iy:{name:"Improve yourself", c:"var(--accent)"},
+  uy:{name:"Understand yourself", c:"var(--teal)"},
+  uo:{name:"Understand others", c:"#7d8fb3"},
+  io:{name:"Improve others", c:"#b0678a"}
+};
+
+const FIELDS = [
+  ["platform","Platform name"],["sources","Sources"],["ingest","Ingestion"],["store","Storage"],
+  ["transform","Transform"],["orch","Orchestration"],["serve","Serving / BI"],["ml","ML / AI"],
+  ["gov","Governance / catalog"],["team","Team"],["goal","Main goal right now","wide"]
+];
+const LAYERS = ["sources","ingest","store","transform","orch","serve","ml","gov"];
+const LAYER_NAMES = {sources:"Sources",ingest:"Ingestion",store:"Storage",transform:"Transform",orch:"Orchestration",serve:"Serving",ml:"ML / AI",gov:"Governance"};
+
+const PRESETS = {
+  "Open lakehouse":{platform:"Nexus",sources:"ERP, CRM and IoT sensors",ingest:"Airbyte",store:"Iceberg on S3",transform:"dbt",orch:"Dagster",serve:"Superset",ml:"Feast feature store",gov:"DataHub",team:"the data team",goal:"trusted daily KPIs for every department"},
+  "Cloud warehouse":{platform:"Nexus",sources:"Salesforce, Stripe and the app database",ingest:"Fivetran",store:"Snowflake",transform:"dbt Cloud",orch:"Airflow",serve:"Looker",ml:"Snowpark models",gov:"Atlan",team:"the analytics engineers",goal:"one revenue number everyone agrees on"},
+  "Streaming":{platform:"Nexus",sources:"clickstream and payment events",ingest:"Kafka + Debezium",store:"ClickHouse",transform:"Flink SQL",orch:"Argo Workflows",serve:"Grafana",ml:"real-time fraud scoring",gov:"OpenMetadata",team:"the platform squad",goal:"sub-minute fraud alerts"},
+  "Lean start":{platform:"Nexus",sources:"Postgres and Google Sheets",ingest:"Python cron scripts",store:"Postgres replica",transform:"SQL views",orch:"cron",serve:"Metabase",ml:"a notebook forecast",gov:"a shared README",team:"two engineers",goal:"replace weekly Excel reports"}
+};
+
+/* Diagram specs: compact descriptions rendered by draw() */
+const M = [
+// ---------- Improve yourself
+{n:1,s:"iy",name:"The Eisenhower Matrix",q:"What should I do first?",
+ sum:"Sort every task by two separate questions: is it important, and is it urgent? Do the important-and-urgent now, schedule the important-but-not-urgent, hand off the urgent-but-unimportant, and drop the rest. Most people live in the urgent row and starve the important one.",
+ d:{k:"m2",x:"urgent →",y:"important →",q:["Schedule","Do now","Drop","Delegate"],hi:1},
+ a:"A broken {ingest} sync feeding the board report is important and urgent: fix it now. Writing data contracts in {gov} is important but never urgent, so it must get a calendar slot or it never happens. One-off CSV pulls for {team} are urgent but not important: make them self-serve in {serve}. The 'just in case' copy of {sources} nobody reads goes in the bin.",
+ m:"Tag every ticket on the {platform} board with both flags before you size it.",L:["ingest","gov","serve"],t:"prioritize priority backlog urgent tasks time busy overload firefighting tickets focus"},
+{n:2,s:"iy",name:"The SWOT Analysis",q:"Is this plan any good?",
+ sum:"List Strengths and Weaknesses (inside, under your control) and Opportunities and Threats (outside, not under your control). The value is in the crossings: use a strength to grab an opportunity, fix the weakness a threat would exploit.",
+ d:{k:"m2",x:"helpful ← → harmful",y:"external · internal",q:["Strengths","Weaknesses","Opportunities","Threats"],flipY:true},
+ a:"For {platform}: a strength is {store} as one shared source of truth; a weakness is the hand-run steps around {transform}; the opportunity is {ml} once the data is clean; the threat is shadow spreadsheets that bypass {gov} and win because they are faster.",
+ m:"Run a SWOT before every quarterly roadmap and keep the four lists in the repo.",L:["store","transform","ml","gov"],t:"evaluate plan strategy roadmap strengths weaknesses risk assessment proposal review"},
+{n:3,s:"iy",name:"The BCG Box",q:"Which of my things deserve more investment?",
+ sum:"Place each product by market growth and market share. Stars (high, high) get investment, cash cows (low growth, high share) fund the rest, question marks need a decision, and poor dogs should be retired.",
+ d:{k:"m2",x:"share →",y:"growth →",q:["Question mark","Star","Poor dog","Cash cow"]},
+ a:"Treat each data product as a product. The KPI dashboard everyone opens in {serve} is a cash cow; keep it cheap and stable. A new {ml} use case is a question mark until someone depends on it. A pipeline from {sources} that grows in use is a star; give it tests and an owner. Reports with no views in 90 days are dogs: deprecate them.",
+ m:"Pull usage stats from {serve} and query logs from {store}; plot every dataset once a quarter.",L:["serve","ml","store"],t:"invest portfolio products deprecate retire usage cost value prioritize budget"},
+{n:4,s:"iy",name:"The Project Portfolio Matrix",q:"Am I running too many projects?",
+ sum:"Plot all current projects on two axes that matter to you, such as cost against strategic fit, or new versus familiar work. The picture shows overload, gaps and the projects nobody would miss.",
+ d:{k:"m2",x:"effort →",y:"strategic fit →",q:["Quick wins","Big bets","Fillers","Money pits"],dots:true},
+ a:"List every running job and initiative in {orch} plus the migration work. Plot effort against how much it moves '{goal}'. The bottom-right corner is where platform teams quietly lose a year.",
+ m:"Cap {team} at a fixed number of big bets; finish one before starting another.",L:["orch"],t:"projects portfolio overload capacity roadmap too many initiatives focus planning"},
+{n:5,s:"iy",name:"The John Whitmore Model",q:"How do I set a goal I will actually reach?",
+ sum:"Coach John Whitmore asked that goals pass three checks: SMART (specific, measurable, attainable, realistic, time-bound), PURE (positively stated, understood, relevant, ethical) and CLEAR (challenging, legal, environmentally sound, agreed, recorded). A goal that fails a check is a wish.",
+ d:{k:"stack",items:["SMART","PURE","CLEAR"],sub:["measurable, dated","understood, relevant","agreed, recorded"]},
+ a:"'{goal}' is a wish until it reads like: 'By end of next quarter, 95% of tables from {sources} land in {store} within 15 minutes, monitored in {orch}, owned by {team}, and the target is written in the handbook.'",
+ m:"Write every platform OKR as one sentence that passes all three checks.",L:["sources","store","orch"],t:"goal goals okr target objective kpi sla measurable plan"},
+{n:6,s:"iy",name:"The Rubber Band Model",q:"Should I stay or should I go?",
+ sum:"When you are torn, list what holds you where you are and what pulls you toward the alternative. Seeing both lists side by side shows which force is real and which is habit.",
+ d:{k:"band",l:"holds me",r:"pulls me"},
+ a:"Thinking of leaving your current {store}? Holding you: sunk licence cost, queries {team} knows by heart, years of quirks already solved. Pulling you: lower cost, open table formats, {ml} support. If the pull list is all features and the hold list is all people, plan for training, not tooling.",
+ m:"Use it for every 'replace tool X' debate before anyone builds a proof of concept.",L:["store","ml"],t:"dilemma stay leave migrate replace switch tool vendor change keep legacy"},
+{n:7,s:"iy",name:"The Feedback Box",q:"How do I give and take criticism?",
+ sum:"Good feedback describes what you observed, names its effect, and is specific and timely. Taking feedback well means listening to the end, asking questions, and deciding later what to do with it, without defending yourself on the spot.",
+ d:{k:"m2",x:"specific →",y:"positive →",q:["Empty praise","Useful praise","Vague attack","Useful critique"]},
+ a:"In a review of a {transform} model, 'this is messy' is a vague attack. 'This join fans out orders when a customer has two addresses, so revenue in {serve} doubles' is useful critique: it names what you saw and what it breaks.",
+ m:"Add a review checklist to the {transform} pull request template: observation, impact, suggestion.",L:["transform","serve"],t:"feedback review code review criticism praise communication pr"},
+{n:8,s:"iy",name:"The Family Tree",q:"Where does this come from?",
+ sum:"Draw your family tree and note what each ancestor passed on: habits, values, professions. Seeing the lines explains choices that feel like your own but were inherited.",
+ d:{k:"tree"},
+ a:"This is data lineage. Every metric in {serve} has ancestors: {transform} models, then raw tables in {store}, then {sources}. When a number looks wrong, walk up the tree in {gov} instead of patching the leaf.",
+ m:"Make lineage from {sources} to dashboard a release requirement, not a nice-to-have.",L:["gov","serve","transform","sources"],t:"lineage origin root cause trace inherited dependency upstream"},
+{n:9,s:"iy",name:"The Morphological Box and SCAMPER",q:"How do I find a new solution?",
+ sum:"Break a problem into its attributes, list several options for each in columns, then combine one option per column into new designs. SCAMPER adds seven prompts: Substitute, Combine, Adapt, Modify, Put to other use, Eliminate, Reverse.",
+ d:{k:"grid",cols:["ingest","store","serve"]},
+ a:"Columns for {platform}: ingestion ({ingest}, CDC, file drop), storage ({store}, a warehouse, a lake), serving ({serve}, an API, a spreadsheet export). Walk the combinations. Then SCAMPER: what if we Eliminated the nightly batch? Reversed the flow and pushed data back into {sources}?",
+ m:"Run one morphological box in every architecture review; keep the losing combinations in the decision record.",L:["ingest","store","serve","sources"],t:"creative idea architecture design options alternatives brainstorm innovation solution"},
+{n:10,s:"iy",name:"The Esquire Gift Model",q:"How much should I spend on a present?",
+ sum:"Two axes decide the gift: how long you have known the person and how much you can spend. Closeness, not price, decides how personal the gift should be.",
+ d:{k:"m2",x:"time known →",y:"budget →",q:["Too much, too soon","Something lasting","Small token","Personal, thoughtful"]},
+ a:"Stakeholder requests are gifts. A new department asking for its first report gets a small, solid token: one clean table in {serve}. A long-time partner like finance gets something personal: a model built around how they close the month, with {ml} forecasts only once trust is there.",
+ m:"Match the effort on a request to the depth of the relationship, not to who shouts loudest.",L:["serve","ml"],t:"stakeholder request effort relationship budget client user expectation"},
+{n:11,s:"iy",name:"The Consensus Model",q:"Who decides, and how?",
+ sum:"Group decisions range from one person deciding alone, through consultation and majority vote, to full consensus. Consensus brings buy-in but costs time; pick the mode deliberately and say it out loud before the discussion starts.",
+ d:{k:"spectrum",items:["Leader","Consult","Vote","Consensus"],l:"fast",r:"buy-in"},
+ a:"Naming conventions for {store} can be a leader decision by {team}. The definition of 'active customer' that every dashboard in {serve} depends on needs consensus across departments, recorded in {gov}.",
+ m:"Write the decision mode at the top of every RFC.",L:["store","serve","gov"],t:"decide team group consensus vote agreement rfc decision rights governance"},
+{n:12,s:"iy",name:"The Conflict Resolution Model",q:"How do we settle a dispute?",
+ sum:"In a conflict you can avoid, accommodate, compete, compromise or collaborate, depending on how much you push for your own interest and how much you care about the other side's. Only collaboration looks for a solution that serves both.",
+ d:{k:"m2",x:"cooperative →",y:"assertive →",q:["Compete","Collaborate","Avoid","Accommodate"],mid:"Compromise"},
+ a:"Sales and finance each have their own revenue number. Avoiding means two dashboards in {serve} forever. Compromise means an average nobody trusts. Collaboration means one {transform} model that exposes both bookings and recognised revenue, each with a clear name in {gov}.",
+ m:"When two teams dispute a metric, build the version that makes both definitions explicit.",L:["serve","transform","gov"],t:"conflict dispute disagreement metric definition politics negotiation stakeholders"},
+{n:13,s:"iy",name:"The Crossroads Model",q:"Which way now?",
+ sum:"At a turning point, ask five questions: Where do I come from? What really matters to me? What is holding me back? Whose advice do I trust? Where would I go if nothing stopped me? Answering them in writing makes the fork less frightening.",
+ d:{k:"cross"},
+ a:"Before a replatform of {platform}: where did we come from (what problem was {store} bought for)? What matters now ('{goal}')? What holds us back? Who has done this migration before? And what would we build today with a blank page?",
+ m:"Hold a crossroads session before any decision that will take more than six months to undo.",L:["store"],t:"turning point career replatform future direction strategy big decision choice"},
+
+// ---------- Understand yourself
+{n:14,s:"uy",name:"The Flow Model",q:"What makes me happy at work?",
+ sum:"Mihaly Csikszentmihalyi found that we are most absorbed when the challenge matches our skill. Too hard and we get anxious; too easy and we get bored. The flow channel runs between the two.",
+ d:{k:"flow"},
+ a:"Hand a junior engineer in {team} the whole {orch} migration and you get anxiety; give a senior one more {ingest} connector to configure and you get boredom. Raise the challenge as skills grow, and people stay in the channel.",
+ m:"Review each person's work against this chart in one-to-ones.",L:["orch","ingest"],t:"motivation team happiness skill challenge boredom burnout engagement growth"},
+{n:15,s:"uy",name:"The Johari Window",q:"What do others see that I don't?",
+ sum:"Split what is known about you into four panes: known to you and others (open), known only to others (blind spot), known only to you (hidden) and known to nobody (unknown). Feedback shrinks the blind spot; openness shrinks the hidden pane.",
+ d:{k:"m2",x:"known to self →",y:"known to others →",q:["Blind spot","Open","Unknown","Hidden"]},
+ a:"Data quality has the same four panes. Open: issues documented in {gov}. Blind spot: wrong numbers users see in {serve} that {team} has not noticed; add tests and a feedback button. Hidden: problems the team knows about but never wrote down. Unknown: found only by profiling everything that lands in {store}.",
+ m:"Keep a public known-issues page; every user report moves an item from blind spot to open.",L:["gov","serve","store"],t:"blind spot data quality unknown observability transparency feedback documentation"},
+{n:16,s:"uy",name:"The Cognitive Dissonance Model",q:"Why do I defend bad decisions?",
+ sum:"When what we believe and what we see conflict, we feel discomfort, and we often ease it by changing the story rather than the belief. The fox that cannot reach the grapes decides they were sour anyway.",
+ d:{k:"split",l:"belief",r:"evidence"},
+ a:"You fought hard for {store}. Now cost per query triples and the team says the workload is 'unusual this month'. Decide in advance which numbers would prove the choice wrong, and put them on a dashboard in {serve}.",
+ m:"Write kill criteria for each big tool choice on the day you make it.",L:["store","serve"],t:"bias defend sunk cost wrong decision rationalize evidence mistake tool choice"},
+{n:17,s:"uy",name:"The Music Matrix",q:"What does my taste say about me?",
+ sum:"Plot what you like on two axes, such as familiar against new and mainstream against niche. The pattern reveals the habits behind your taste and the corners you never explore.",
+ d:{k:"m2",x:"niche →",y:"new →",q:["Hype","Experiment","Safe classic","Comfort pick"],dots:true},
+ a:"Plot every tool {team} has picked: {ingest}, {store}, {transform}, {orch}. If they all sit in 'new and niche', the team is optimising for its CV. If all sit in 'old and mainstream', it may be missing ten years of progress.",
+ m:"Aim for a stack that is mostly boring with one deliberate experiment.",L:["ingest","store","transform","orch"],t:"tool choice taste bias new shiny boring technology stack selection"},
+{n:18,s:"uy",name:"The Unimaginable",q:"What could never happen?",
+ sum:"List the things you are sure will never happen to you or your organisation. Then take each one seriously for a minute: what would you do? The list exposes assumptions you have stopped seeing.",
+ d:{k:"box",l:"certain",r:"what if?"},
+ a:"'{sources} will always have an API.' '{store} will never lose a region.' 'Nobody would delete prod tables.' Run a tabletop exercise on each, and find out how long {platform} takes to come back.",
+ m:"Hold one game day per quarter on an 'impossible' scenario.",L:["sources","store"],t:"risk disaster recovery incident failure assumption resilience outage scenario"},
+{n:19,s:"uy",name:"The Uffe Elbæk Model",q:"What kind of leader am I?",
+ sum:"Danish entrepreneur Uffe Elbæk described leadership as a set of competences: the idea, the people, the structure, the results and yourself. Rate yourself on each and see which you neglect.",
+ d:{k:"radar",items:["Idea","People","Structure","Results","Self"],v:[.85,.55,.4,.7,.5]},
+ a:"Platform leads often score high on Idea (the vision of {platform}) and Structure (the {orch} DAGs) and low on People (who in {team} is struggling) and Self. The weakest spoke is where the platform will stall.",
+ m:"Rate yourself and ask two colleagues to rate you; discuss the gaps.",L:["orch"],t:"leadership self assessment lead manager skills strengths weakness"},
+{n:20,s:"uy",name:"The Fashion Model",q:"Am I leading or following?",
+ sum:"Trends move from a small avant-garde to early followers, then to the mainstream, and finally become outdated, at which point the avant-garde has already moved on. Knowing where you stand tells you whether you are early or simply late.",
+ d:{k:"wave",items:["Avant-garde","Early","Mainstream","Outdated"]},
+ a:"Data architecture has fashions too: Hadoop, then cloud warehouses, then lakehouses and data mesh. If {store} and {transform} are mainstream, you get hiring and support; if they are avant-garde, you get pioneers' problems. Choose consciously.",
+ m:"For each new tool, note where it sits in the cycle before adopting it.",L:["store","transform"],t:"trend fashion hype architecture new technology adoption timing"},
+{n:21,s:"uy",name:"The Energy Model",q:"Where does my energy go?",
+ sum:"Plot your state on two axes: energy level (high or low) and mood (positive or negative). High-positive is where good work happens; high-negative leads to stress, low-negative to burnout, low-positive to recovery.",
+ d:{k:"m2",x:"positive →",y:"energy →",q:["Stress","Peak","Burnout","Recovery"]},
+ a:"Weeks of 3 a.m. pages because {orch} retries broke push {team} from stress into burnout. Fix the noisiest alerts first; protect recovery time after incidents like you protect the backups of {store}.",
+ m:"Track on-call load per person and act on it like any other SLO.",L:["orch","store"],t:"burnout on-call stress energy fatigue team health alerts wellbeing"},
+{n:22,s:"uy",name:"The SuperMemo Model",q:"How do I remember what I learn?",
+ sum:"Memory fades along a forgetting curve. Reviewing at growing intervals (a day, a week, a month) resets the curve each time, so less is lost with less effort.",
+ d:{k:"forget"},
+ a:"The backfill procedure you run twice a year is forgotten every time. Rehearse rare tasks on a schedule: restoring {store}, rotating {ingest} credentials, re-running a {transform} full refresh.",
+ m:"Put runbook drills on a spaced calendar; shorten the gap after a failed drill.",L:["store","ingest","transform"],t:"learning memory knowledge runbook training documentation onboarding forget"},
+{n:23,s:"uy",name:"The Political Compass",q:"Where do I really stand?",
+ sum:"A single left-right line hides a second question: how much control versus freedom you want. Two axes place people more honestly and show that apparent opposites may share a view.",
+ d:{k:"m2",x:"centralised ← → federated",y:"freedom ↓ control ↑",q:["Central & strict","Federated & strict","Central & open","Federated & open"],dots:true},
+ a:"Data governance arguments are often two-axis arguments. One person wants {team} to own everything centrally; another wants domains to own their data. Separately, people differ on strict access control in {gov} versus open-by-default. Place each voice before arguing.",
+ m:"Agree on your spot on the compass before writing the governance policy.",L:["gov"],t:"governance politics central federated mesh ownership access control policy"},
+{n:24,s:"uy",name:"The Personal Performance Model",q:"Should I change my job?",
+ sum:"Check three circles: what you want to do, what you can do, and what you must do. When they overlap you perform and are content; when 'must' swallows the others, it is time for a change.",
+ d:{k:"venn",items:["want","can","must"]},
+ a:"Apply it to a tool. Want: what {team} wishes {transform} did. Can: what the team can actually operate. Must: compliance and cost limits. A tool that lives only in 'want' is a toy; one that lives only in 'must' breeds resentment.",
+ m:"Check every platform component for overlap of all three circles each year.",L:["transform"],t:"job change career tool fit capability requirements compliance satisfaction"},
+{n:25,s:"uy",name:"The Making-of Model",q:"How did that really happen?",
+ sum:"Look back at a finished project and reconstruct how it was actually made, including the detours, luck and wrong turns that the clean final story leaves out. The real path teaches more than the official one.",
+ d:{k:"path"},
+ a:"The launch story of {platform} says 'we chose {store}, built pipelines, shipped dashboards'. The making-of says three connectors failed, a key analyst joined by chance, and the first {serve} demo was faked. Write that version down too.",
+ m:"Add a 'what really happened' section to every post-mortem and launch retro.",L:["store","serve"],t:"retrospective post-mortem lessons learned history reflection review project"},
+{n:26,s:"uy",name:"The Personal Potential Trap",q:"Why does 'potential' feel like a burden?",
+ sum:"The more people expect of your potential, the wider the gap grows between what you could do and what you have done. The way out is to stop measuring against potential and start shipping finished work.",
+ d:{k:"gap"},
+ a:"Every data platform is sold on potential: 'once it's all in {store}, {ml} will be easy'. Two years later the gap between promise and delivered value is the main story. Ship one dashboard in {serve} that a real person uses every Monday.",
+ m:"Report delivered value, not roadmap potential, in every steering meeting.",L:["store","ml","serve"],t:"expectations potential value delivery promise roi ship mvp"},
+{n:27,s:"uy",name:"The Hype Cycle",q:"Is this technology worth it yet?",
+ sum:"Gartner's curve: a trigger, a peak of inflated expectations, a trough of disillusionment, then a slow slope of enlightenment to a plateau of productivity. Most people adopt at the peak and abandon in the trough.",
+ d:{k:"hype"},
+ a:"Place each part of {platform} on the curve. {ml} may be near the peak; {store} might be climbing out of the trough. Adopt near the slope of enlightenment when you can, and expect the trough when you cannot.",
+ m:"When a vendor demo excites everyone, ask where the product sits on the curve.",L:["ml","store"],t:"hype technology adoption ai new trend vendor expectations timing evaluate"},
+{n:28,s:"uy",name:"The Subtle Signals Model",q:"What are small signs telling me?",
+ sum:"Big changes announce themselves early through small signals: a tone in a meeting, a habit that shifts. Learning to read weak signals gives you time to act before they become loud.",
+ d:{k:"signal"},
+ a:"Before a pipeline breaks loudly, it whispers: row counts from {sources} drift down 2% a week, {orch} runtimes creep up, fewer people open a dashboard in {serve}. Monitor trends, not just failures.",
+ m:"Add trend alerts on volume, freshness and usage, not only pass/fail checks.",L:["sources","orch","serve"],t:"monitoring observability early warning drift trend anomaly signals"},
+{n:29,s:"uy",name:"The Network Target Model",q:"Who should I know?",
+ sum:"Map your network: who you know, how well, and through whom. Then mark the people you need for your goal and the bridges that lead to them.",
+ d:{k:"net",target:true},
+ a:"Map the people around {platform}: owners of {sources}, heavy users of {serve}, the security team, finance. Mark who you need for '{goal}' and who can introduce you. The pipeline you cannot build is usually a relationship you do not have.",
+ m:"Keep a stakeholder map next to the architecture diagram.",L:["sources","serve"],t:"stakeholder network relationships people influence adoption sponsor"},
+{n:30,s:"uy",name:"The Superficial Knowledge Model",q:"How deep is what I know?",
+ sum:"We know a little about many things and a lot about few. That is fine, as long as you know which is which and do not mistake recognising a term for understanding it.",
+ d:{k:"tshape"},
+ a:"A healthy {team} is T-shaped: everyone can read a {transform} model and a {orch} DAG, and each person goes deep in one area, such as {store} internals or {ml}. Check that every critical component has at least two deep experts.",
+ m:"Keep a skills matrix and flag components with a bus factor of one.",L:["transform","orch","store","ml"],t:"skills knowledge expertise bus factor hiring training depth team"},
+
+// ---------- Understand others
+{n:31,s:"uo",name:"The Swiss Cheese Model",q:"Why do accidents happen anyway?",
+ sum:"James Reason pictured defences as slices of cheese, each with holes. An accident happens only when holes in every slice line up. Add slices and shrink holes; never trust a single layer.",
+ d:{k:"cheese"},
+ a:"Bad data reaches the CEO only when every layer fails at once: no contract at {ingest}, no test in {transform}, no freshness check in {orch}, no review in {gov}. Each layer can be imperfect if the holes do not align.",
+ m:"For every incident, mark which slices it passed through and add one.",L:["ingest","transform","orch","gov"],t:"incident quality failure defense testing risk safety root cause prevention"},
+{n:32,s:"uo",name:"The Maslow Pyramid",q:"What do people really need?",
+ sum:"Abraham Maslow ordered needs from survival and safety up through belonging and esteem to self-actualisation. Higher needs only matter once the lower ones are met.",
+ d:{k:"pyr",items:["Learn","Analyse","Clean","Store","Collect"]},
+ a:"Data has its own hierarchy. Collect with {ingest}, store reliably in {store}, clean and model in {transform}, analyse in {serve}, and only then learn with {ml}. Teams that jump to the top build on sand.",
+ m:"Before any {ml} project, check that every layer beneath it is solid.",L:["ingest","store","transform","serve","ml"],t:"needs foundation hierarchy ai ml readiness basics maturity"},
+{n:33,s:"uo",name:"Thinking Outside the Box",q:"Which limits are only in my head?",
+ sum:"The nine-dots puzzle asks you to join nine dots with four straight lines. It is only possible if you draw beyond the square the dots suggest. Many constraints are assumed, not given.",
+ d:{k:"dots"},
+ a:"'We need a new pipeline into {store}' assumes data must move. Could {serve} query {sources} directly? Could the source team publish a clean table? Question the frame before designing inside it.",
+ m:"In design reviews, list stated constraints and ask which are real.",L:["store","serve","sources"],t:"creative constraints assumptions alternative innovation problem solving"},
+{n:34,s:"uo",name:"The Sinus Milieu and Bourdieu Models",q:"Who are these people, really?",
+ sum:"Sinus milieus group people by social position and values rather than by income alone. Pierre Bourdieu added that people hold three kinds of capital: economic, cultural and social. Both explain why similar people choose differently.",
+ d:{k:"milieu"},
+ a:"Users of {serve} are not one group. Executives have status and want one number. Analysts have cultural capital and want raw tables in {store}. Operations want an alert on their phone. Design one product per milieu.",
+ m:"Write three user personas for {platform} and test each release against them.",L:["serve","store"],t:"users personas audience segmentation stakeholders adoption ux"},
+{n:35,s:"uo",name:"The Double-Loop Learning Model",q:"Am I fixing the problem or the symptom?",
+ sum:"Single-loop learning adjusts actions when results go wrong. Double-loop learning asks whether the goals and assumptions behind the actions were right in the first place.",
+ d:{k:"loops"},
+ a:"Single loop: the nightly {orch} job failed, so add a retry. Double loop: why is this a nightly batch at all? Maybe {ingest} should stream changes, and the failure was a symptom of the design.",
+ m:"After the third repeat of an incident, require a double-loop question in the post-mortem.",L:["orch","ingest"],t:"root cause learning symptom recurring incident assumptions improvement"},
+{n:36,s:"uo",name:"The Small-World Model",q:"How is everyone connected?",
+ sum:"Any two people are linked by a short chain of acquaintances, because a few well-connected hubs bridge separate clusters. Reach the hubs and you reach everyone.",
+ d:{k:"net"},
+ a:"A few tables, like customer and product in {store}, connect nearly every model in {transform}. Break one and half of {serve} breaks. Find your hub tables, give them owners and contracts, and test them hardest.",
+ m:"Rank tables by downstream dependants in {gov}; protect the top ten.",L:["store","transform","serve","gov"],t:"dependency hub central tables network impact blast radius"},
+{n:37,s:"uo",name:"The Pareto Principle",q:"Where is the 80/20?",
+ sum:"In many systems roughly 20% of causes produce 80% of effects. Find that 20% and put your effort there.",
+ d:{k:"pareto"},
+ a:"About 20% of tables in {store} answer 80% of queries, and 20% of {orch} jobs cause 80% of failures. Optimise, test and document those first; leave the long tail cheap.",
+ m:"Pull query and failure logs monthly and sort them by share.",L:["store","orch"],t:"prioritize focus cost optimization performance 80 20 effort"},
+{n:38,s:"uo",name:"The Long Tail",q:"Do small niches add up?",
+ sum:"Chris Anderson showed that in markets with no shelf limits, the many items each selling a little can together outsell the hits. The tail is long and thin but large.",
+ d:{k:"tail"},
+ a:"Few requests in {serve} are the hits; most are one-off questions from one person. You cannot build each one, but together they are most of the demand. Self-service on clean {transform} models serves the tail.",
+ m:"Measure ad-hoc request volume; invest in self-service when the tail outgrows the head.",L:["serve","transform"],t:"self service ad hoc requests demand niche users scale"},
+{n:39,s:"uo",name:"The Monte Carlo Simulation",q:"What range of outcomes should I expect?",
+ sum:"Instead of one forecast, run thousands of simulations with randomly varied inputs and look at the spread of results. It replaces a false single number with honest odds.",
+ d:{k:"bell",mc:true},
+ a:"'The migration to {store} takes four months' is one guess. Estimate each connector from {sources} as a range, simulate, and say: '80% chance we finish within six months.' That sentence survives contact with reality.",
+ m:"Give every large estimate as a range with a confidence level.",L:["store","sources"],t:"forecast estimate timeline uncertainty probability planning risk"},
+{n:40,s:"uo",name:"The Black Swan",q:"What about the event nobody predicted?",
+ sum:"Nassim Taleb's black swan is rare, has an enormous impact, and seems obvious only afterwards. You cannot predict it, but you can build things that survive it.",
+ d:{k:"bell",swan:true},
+ a:"A cloud region outage, a vendor bankruptcy, a regulator banning a data flow from {sources}. Do not try to forecast them; make {platform} recoverable: backups of {store} elsewhere, an exportable format, a second way to ingest.",
+ m:"Ask 'what if this disappeared tomorrow?' for every external dependency.",L:["sources","store"],t:"risk outage vendor lock in resilience disaster rare event"},
+{n:41,s:"uo",name:"The Chasm",q:"Why do good ideas stall?",
+ sum:"Innovations spread from innovators to early adopters to the early majority, late majority and laggards. Geoffrey Moore saw a chasm between early adopters, who like novelty, and the early majority, who want proof and convenience.",
+ d:{k:"chasm"},
+ a:"The analysts who loved {serve} in month one are your early adopters. The sales team is the early majority: they need it inside the tool they already use, with numbers they trust. Crossing the chasm for {platform} means fewer features and more reliability.",
+ m:"Pick one early-majority department and make it a reference customer.",L:["serve"],t:"adoption rollout users change management onboarding departments growth"},
+{n:42,s:"uo",name:"The Black Box Model",q:"How do I judge what I cannot see inside?",
+ sum:"Some systems are opaque: you see inputs and outputs but not the mechanism. You can still learn a lot by varying inputs carefully and watching outputs.",
+ d:{k:"bbox"},
+ a:"Managed connectors in {ingest} and models in {ml} are black boxes. Do not trust them blindly; feed known test records from {sources} and check what arrives in {store}.",
+ m:"Maintain a small golden dataset that runs through every opaque component.",L:["ingest","ml","sources","store"],t:"vendor managed service ai model opaque testing trust validation"},
+{n:43,s:"uo",name:"The Status Model",q:"Who is up and who is down?",
+ sum:"Every interaction carries a status game: people raise or lower themselves and others through posture, words and timing. Seeing the game lets you choose your move instead of playing it by reflex.",
+ d:{k:"seesaw"},
+ a:"Data ownership is a status game. A department that owns the source in {sources} gains status when its numbers are the official ones in {serve}. Give owners visible credit in {gov}, and they will guard quality for you.",
+ m:"Name data owners publicly; status is cheaper than enforcement.",L:["sources","serve","gov"],t:"ownership politics status influence credit stakeholders culture"},
+{n:44,s:"uo",name:"The Prisoner's Dilemma",q:"Cooperate or protect myself?",
+ sum:"Two players each gain most by betraying the other, yet both lose if both betray. Cooperation pays only when the game repeats and trust can build.",
+ d:{k:"payoff"},
+ a:"Two teams can share clean data in {store} or keep their own copies. Hoarding feels safe for each, but both end up with mismatched numbers. Make sharing a repeated game: shared credit in {gov} and a stable contract for each published table.",
+ m:"Reward teams for downstream use of the data they publish.",L:["store","gov"],t:"sharing silos cooperation trust incentives teams data sharing"},
+
+// ---------- Improve others
+{n:45,s:"io",name:"The Drexler-Sibbet Team Performance Model",q:"Where is my team stuck?",
+ sum:"Teams pass through seven stages: orientation (why am I here?), trust, goal clarification, commitment, implementation, high performance and renewal. Problems at a later stage often come from skipping an earlier one.",
+ d:{k:"stages",items:["Why","Trust","Goal","Commit","Build","Perform","Renew"]},
+ a:"If {team} keeps missing delivery dates on {platform}, look backward: do they agree on the goal ('{goal}')? Do they trust each other enough to say a pipeline is not ready? Fix the earliest unresolved stage.",
+ m:"Run the seven questions at every team kickoff and after every reorganisation.",L:[],t:"team performance stuck kickoff trust commitment delivery collaboration"},
+{n:46,s:"io",name:"The Team Model",q:"How do teams grow up?",
+ sum:"Bruce Tuckman described forming, storming, norming and performing. Conflict in the storming phase is a normal step, not a sign of failure; skipping it just postpones it.",
+ d:{k:"cycle",items:["Forming","Storming","Norming","Performing"]},
+ a:"A new {team} will argue about {transform} conventions and {orch} ownership. That is storming. Help them reach norms (a style guide, an on-call rota) instead of suppressing the argument.",
+ m:"Turn every heated debate into a written norm in the handbook.",L:["transform","orch"],t:"team new team conflict norms culture onboarding growth"},
+{n:47,s:"io",name:"The Gap-in-the-Market Model",q:"Where is there room?",
+ sum:"Plot existing offers on the two dimensions customers care about most. Empty areas are possible gaps; check that the gap exists because nobody tried, not because nobody wants it.",
+ d:{k:"m2",x:"self-serve →",y:"trust →",q:["","Your spot","",""],dots:true,gap:true},
+ a:"Map the alternatives your users already have: Excel exports, a vendor's built-in reports, the old BI tool. If they are all either easy or trustworthy but not both, the gap for {platform} is trusted self-service through {serve}.",
+ m:"Position {platform} against what users do today, not against other platforms.",L:["serve"],t:"positioning value proposition competition product strategy differentiation"},
+{n:48,s:"io",name:"The Hersey-Blanchard Model",q:"How should I lead this person?",
+ sum:"Situational leadership matches style to the person's readiness for a task: directing for the willing beginner, coaching for the disillusioned learner, supporting for the capable but unsure, delegating for the confident expert.",
+ d:{k:"m2",x:"← readiness",y:"support →",q:["Supporting","Coaching","Delegating","Directing"]},
+ a:"A new hire on {transform}: direct with pair programming. Six months in and frustrated: coach. Skilled but hesitant on {store} tuning: support. Your senior on {orch}: delegate the whole thing and stay out of the way.",
+ m:"Choose the style per task, not per person; the same engineer can need all four.",L:["transform","store","orch"],t:"leadership management mentoring delegation coaching junior senior"},
+{n:49,s:"io",name:"The Role-Playing Model",q:"How would someone else see this?",
+ sum:"Take on a role deliberately, such as the critic, the customer or the optimist, and argue the case from there. Roles give people permission to say what they would not say as themselves.",
+ d:{k:"cycle",items:["User","Critic","Auditor","Operator"]},
+ a:"In an architecture review for {platform}, assign roles: the analyst who uses {serve} daily, the auditor checking {gov}, the on-call engineer for {orch}, the CFO reading the {store} bill. Each finds different holes.",
+ m:"Assign rotating roles in every design review.",L:["serve","gov","orch","store"],t:"review perspectives design review empathy stakeholders critique"},
+{n:50,s:"io",name:"The Result Optimisation Model",q:"How do I get better results step by step?",
+ sum:"Improve in short, repeated loops: plan a change, do it, check the result against the goal, and act on what you learn. Small loops compound faster than big plans.",
+ d:{k:"cycle",items:["Plan","Do","Check","Act"]},
+ a:"Do not redesign {platform} in one go. Plan one change (a freshness SLA for {sources}), do it, check it in {serve} after two weeks, keep or revert. Then the next loop toward '{goal}'.",
+ m:"Run two-week improvement loops with one measurable change each.",L:["sources","serve"],t:"improve iterate continuous improvement optimize experiment agile pdca"}
+];
+
+/* ---------- state ---------- */
+const KEY = "nexus-atlas-v1";
+let state = {preset:"Open lakehouse", vals:{...PRESETS["Open lakehouse"]}, problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
+try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, sec:null, layer:null, search:""}; } catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({preset:state.preset, vals:state.vals, problem:state.problem, own:state.own})); } catch(e){} };
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fill = (tpl, hl=true) => esc(tpl).replace(/\{(\w+)\}/g, (_, k) => {
+  const v = (state.vals[k]||"").trim() || (LAYER_NAMES[k]||k).toLowerCase();
+  return hl ? `<mark>${esc(v)}</mark>` : esc(v);
+});
+
+/* ---------- diagrams ---------- */
+const W=260,H=160;
+const T=(x,y,s,cls="",anchor="middle")=>`<text x="${x}" y="${y}" text-anchor="${anchor}" class="${cls}">${esc(s)}</text>`;
+function draw(d){
+  let g="";
+  switch(d.k){
+  case "m2":{
+    const x0=40,y0=12,w=200,h=120;
+    const order = d.flipY ? [0,1,2,3] : [0,1,2,3];
+    g+=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" class="pf" stroke="none"/>`;
+    const cells=[[x0,y0],[x0+w/2,y0],[x0,y0+h/2],[x0+w/2,y0+h/2]];
+    cells.forEach(([cx,cy],i)=>{
+      const on = d.hi===i || (d.gap && i===1);
+      g+=`<rect x="${cx+2}" y="${cy+2}" width="${w/2-4}" height="${h/2-4}" rx="4" class="${on?'asoft':'soft'}"/>`;
+      if(d.q[order[i]]) g+=T(cx+w/4,cy+h/4+4,d.q[order[i]],"b");
+    });
+    g+=`<line x1="${x0}" y1="${y0+h}" x2="${x0+w}" y2="${y0+h}" class="ln"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y0+h}" class="ln"/>`;
+    g+=T(x0+w/2,y0+h+16,d.x,"m");
+    g+=`<text transform="translate(${x0-10} ${y0+h/2}) rotate(-90)" text-anchor="middle" class="m">${esc(d.y)}</text>`;
+    if(d.mid) g+=`<circle cx="${x0+w/2}" cy="${y0+h/2}" r="18" class="pf" stroke="var(--accent)" stroke-width="1.5"/>`+T(x0+w/2,y0+h/2+3,d.mid,"m");
+    if(d.dots){ const pts=d.gap?[[54,96],[60,124],[124,124],[160,120],[226,124],[56,26],[124,60]]:[[56,24],[124,60],[156,24],[226,86],[58,120],[224,124],[132,92]];
+      pts.forEach(([px,py],i)=> g+=`<circle cx="${px}" cy="${py}" r="4.5" class="${i===2&&!d.gap?'acc':'tf'}"/>`);
+      if(d.gap) g+=`<circle cx="190" cy="42" r="9" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="3 2"/>`;
+    }
+    break;}
+  case "stack":
+    d.items.forEach((it,i)=>{const y=14+i*46;
+      g+=`<rect x="40" y="${y}" width="180" height="38" rx="6" class="${i===0?'asoft':'soft'}"/>`+T(80,y+24,it,"b")+T(160,y+24,d.sub[i],"m");
+      if(i<2) g+=`<path d="M130 ${y+38} v8" class="ln"/>`;});
+    break;
+  case "band":
+    g+=`<rect x="20" y="62" width="40" height="40" rx="6" class="soft"/><rect x="200" y="62" width="40" height="40" rx="6" class="asoft"/>`;
+    g+=`<path d="M60 76 Q130 50 200 76 M60 88 Q130 114 200 88" class="accs"/>`;
+    g+=`<circle cx="130" cy="82" r="14" class="tf"/><text x="130" y="86" text-anchor="middle" style="fill:var(--panel);font:600 9px var(--font-mono)">you</text>`;
+    g+=T(40,124,d.l,"b")+T(220,124,d.r,"b")+T(40,140,"← fears, habits","m")+T(220,140,"wishes, gains →","m");
+    break;
+  case "tree":{
+    const nodes=[[130,20,"metric"],[80,62,"model"],[180,62,"model"],[50,104,"table"],[110,104,"table"],[180,104,"table"],[80,144,"source"],[180,144,"source"]];
+    const ed=[[0,1],[0,2],[1,3],[1,4],[2,5],[3,6],[4,6],[5,7]];
+    ed.forEach(([a,b])=>g+=`<line x1="${nodes[a][0]}" y1="${nodes[a][1]}" x2="${nodes[b][0]}" y2="${nodes[b][1]}" class="ln"/>`);
+    nodes.forEach(([x,y,l],i)=>g+=`<rect x="${x-26}" y="${y-10}" width="52" height="18" rx="9" class="${i===0?'asoft':'soft'}"/>`+T(x,y+3,l,"m"));
+    break;}
+  case "grid":{
+    const opts=[["batch","CDC","file"],["warehouse","lake","lakehouse"],["BI","API","export"]];
+    const labels=["ingest","store","serve"];
+    const pick=[1,2,0];
+    labels.forEach((c,ci)=>{const x=24+ci*76;g+=T(x+34,16,c,"b");
+      opts[ci].forEach((o,ri)=>{const y=26+ri*40;g+=`<rect x="${x}" y="${y}" width="68" height="32" rx="5" class="${pick[ci]===ri?'asoft':'soft'}"/>`+T(x+34,y+20,o,"m");});});
+    g+=`<path d="M58 82 L134 122 L210 42" class="accs"/>`;
+    break;}
+  case "spectrum":
+    g+=`<line x1="24" y1="80" x2="236" y2="80" class="ln"/>`;
+    d.items.forEach((it,i)=>{const x=40+i*60;g+=`<circle cx="${x}" cy="80" r="${7+i*2}" class="${i===3?'acc':'tf'}"/>`+T(x,112,it,"b");});
+    g+=T(30,50,"← "+d.l,"m","start")+T(230,50,d.r+" →","m","end");
+    break;
+  case "cross":
+    g+=`<path d="M130 150 V84 M130 84 L60 24 M130 84 L200 24 M130 84 L20 84 M130 84 L240 84" class="ln"/>`;
+    g+=`<circle cx="130" cy="84" r="8" class="acc"/>`;
+    [["came from",130,154],["matters",60,18],["dream",200,18],["holds back",30,76],["advisers",226,76]].forEach(([l,x,y])=>g+=T(x,y,l,"m"));
+    break;
+  case "flow":
+    g+=`<path d="M30 140 L30 14 M30 140 L246 140" class="ln"/>`;
+    g+=`<path d="M30 120 L200 14 L246 14 L246 40 L60 140 Z" class="asoft"/>`;
+    g+=`<path d="M30 130 L230 10" class="accs" stroke-dasharray="4 4"/>`;
+    g+=T(70,40,"anxiety","b")+T(200,118,"boredom","b")+T(150,72,"flow","b")+T(138,156,"skill →","m");
+    g+=`<text transform="translate(18 80) rotate(-90)" text-anchor="middle" class="m">challenge →</text>`;
+    break;
+  case "split":
+    g+=`<circle cx="100" cy="80" r="50" class="soft"/><circle cx="160" cy="80" r="50" class="asoft" style="mix-blend-mode:multiply"/>`;
+    g+=`<path d="M130 40 l-6 14 l8 8 l-8 10 l8 10 l-6 14 l6 14" class="ln"/>`;
+    g+=T(82,84,d.l,"b")+T(180,84,d.r,"b")+T(130,150,"discomfort → change the story","m");
+    break;
+  case "box":
+    g+=`<rect x="30" y="30" width="120" height="100" rx="6" class="soft"/>`+T(90,84,d.l,"b");
+    g+=`<path d="M150 80 Q200 40 230 70 T236 120" class="accs" stroke-dasharray="5 4"/>`;
+    g+=`<circle cx="236" cy="126" r="5" class="acc"/>`+T(210,40,d.r,"b");
+    break;
+  case "radar":{
+    const cx=130,cy=84,R=58,n=d.items.length;
+    const pt=(i,r)=>[cx+r*Math.sin(2*Math.PI*i/n), cy-r*Math.cos(2*Math.PI*i/n)];
+    [1,.66,.33].forEach(f=>g+=`<polygon points="${d.items.map((_,i)=>pt(i,R*f).join(",")).join(" ")}" class="ln2"/>`);
+    g+=`<polygon points="${d.v.map((v,i)=>pt(i,R*v).join(",")).join(" ")}" class="asoft" stroke="var(--accent)" stroke-width="2"/>`;
+    d.items.forEach((it,i)=>{const [x,y]=pt(i,R+14);g+=T(x,y+3,it,"m");});
+    break;}
+  case "wave":
+    g+=`<path d="M20 140 C70 140 80 30 130 30 C180 30 190 140 240 140" class="tl"/>`;
+    d.items.forEach((it,i)=>{const x=[40,90,150,215][i],y=[128,60,40,118][i];g+=`<circle cx="${x}" cy="${y}" r="5" class="${i===1?'acc':'tf'}"/>`+T(x,y-10,it,"m");});
+    break;
+  case "forget":
+    g+=`<path d="M24 140 H246 M24 140 V14" class="ln"/>`;
+    g+=`<path d="M24 20 C40 90 60 110 80 120" class="ln2"/>`;
+    g+=`<path d="M24 20 C34 60 44 70 60 74 L60 24 C80 60 100 66 120 68 L120 26 C150 50 180 54 210 56 L210 28 C225 34 236 36 246 36" class="accs"/>`;
+    g+=T(150,156,"time · reviews ↑","m")+T(90,132,"no review","m");
+    break;
+  case "venn":
+    g+=`<circle cx="105" cy="66" r="44" class="soft" opacity=".9"/><circle cx="155" cy="66" r="44" class="asoft" opacity=".85"/><circle cx="130" cy="106" r="44" fill="none" stroke="var(--teal)" stroke-width="2"/>`;
+    g+=`<circle cx="130" cy="80" r="6" class="acc"/>`;
+    g+=T(86,50,d.items[0],"b")+T(176,50,d.items[1],"b")+T(130,140,d.items[2],"b");
+    break;
+  case "path":
+    g+=`<path d="M24 130 C60 130 50 40 90 60 S120 140 150 90 S170 20 200 50 S230 40 240 30" class="accs" stroke-dasharray="5 4"/>`;
+    g+=`<path d="M24 130 L240 30" class="ln2"/>`;
+    g+=`<circle cx="24" cy="130" r="5" class="tf"/><circle cx="240" cy="30" r="5" class="tf"/>`;
+    g+=T(160,150,"the official story is the straight line","m");
+    break;
+  case "gap":
+    g+=`<path d="M24 140 H246 M24 140 V14" class="ln"/>`;
+    g+=`<path d="M24 120 L240 20" class="ln2"/><path d="M24 120 C100 112 160 104 240 96" class="accs"/>`;
+    g+=`<path d="M200 38 V100" class="ln" stroke-dasharray="2 2"/>`;
+    g+=T(170,34,"potential","m")+T(196,112,"achieved","m")+T(222,70,"gap","b");
+    break;
+  case "hype":
+    g+=`<path d="M24 140 H246" class="ln"/>`;
+    g+=`<path d="M24 136 C50 136 56 20 76 20 C96 20 100 120 124 120 C150 120 180 74 240 70" class="accs"/>`;
+    [["trigger",30,152],["peak",76,14],["trough",124,134],["slope",170,84],["plateau",226,62]].forEach(([l,x,y])=>g+=T(x,y,l,"m"));
+    break;
+  case "signal":
+    g+=`<path d="M24 140 H246" class="ln"/>`;
+    let p="M24 70";for(let i=0;i<=44;i++){const x=24+i*5;const y=70+Math.sin(i*1.3)*4+ i*i*0.022;p+=` L${x} ${y.toFixed(1)}`;}
+    g+=`<path d="${p}" class="tl"/>`;
+    g+=`<path d="M24 66 L244 108" class="accs" stroke-dasharray="4 4" opacity=".8"/>`;
+    g+=T(70,40,"noise hides the trend","m")+T(206,130,"slow drift","b");
+    break;
+  case "net":{
+    const P=[[130,80],[60,40],[50,110],[90,140],[200,40],[215,110],[170,140],[30,70],[240,74],[100,20],[160,18]];
+    const E=[[0,1],[0,2],[0,4],[0,5],[0,6],[1,7],[1,9],[2,3],[2,7],[4,10],[4,8],[5,8],[5,6],[3,6],[9,10]];
+    E.forEach(([a,b])=>g+=`<line x1="${P[a][0]}" y1="${P[a][1]}" x2="${P[b][0]}" y2="${P[b][1]}" class="ln2"/>`);
+    P.forEach(([x,y],i)=>{let c=i===0?"acc":"tf",r=i===0?10:5; if(d.target&&i===8){c="pf";} g+=`<circle cx="${x}" cy="${y}" r="${r}" class="${c}" ${d.target&&i===8?'stroke="var(--accent)" stroke-width="2"':''}/>`;});
+    g+=T(130,104,d.target?"you":"hub","b");
+    if(d.target) g+=T(236,96,"target","m")+`<path d="M130 80 L200 40 L240 74" class="accs" stroke-dasharray="4 3"/>`;
+    break;}
+  case "tshape":
+    ["ingest","store","transf.","orch","serve","ml","gov"].forEach((l,i)=>{const x=22+i*32,h=i===1?96:22;g+=`<rect x="${x}" y="26" width="28" height="${h}" rx="3" class="${i===1?'acc':'soft'}"/>`+T(x+14,148,l,"m");});
+    g+=T(130,16,"broad across · deep in one","m");
+    break;
+  case "cheese":
+    for(let i=0;i<4;i++){const x=40+i*48;g+=`<path d="M${x} 30 l20 -10 v110 l-20 10 Z" class="asoft" stroke="var(--accent)" stroke-width="1"/>`;
+      const hy=[52,84,70,98][i];g+=`<ellipse cx="${x+10}" cy="${hy}" rx="5" ry="8" class="pf"/>`;}
+    g+=`<path d="M14 66 L58 54 L104 80 L152 72 L196 96 L246 110" class="accs"/>`+`<circle cx="246" cy="110" r="5" class="acc"/>`;
+    g+=T(130,154,"contract · test · monitor · review","m");
+    break;
+  case "pyr":{
+    const n=d.items.length,top=12,h=136/n,hw=y=>(y-top)/136*120;
+    d.items.forEach((it,i)=>{const y1=top+i*h,y2=y1+h;
+      g+=`<polygon points="${130-hw(y1)},${y1} ${130+hw(y1)},${y1} ${130+hw(y2)},${y2} ${130-hw(y2)},${y2}" class="${i===0?'asoft':'soft'}" stroke="var(--panel)" stroke-width="2"/>`;
+      g+=T(130,y1+h/2+(i===0?8:4),it,"b");});
+    break;}
+  case "dots":
+    for(let r=0;r<3;r++)for(let c=0;c<3;c++)g+=`<circle cx="${100+c*30}" cy="${50+r*30}" r="5" class="tf"/>`;
+    g+=`<rect x="90" y="40" width="80" height="80" class="ln2"/>`;
+    g+=`<path d="M100 50 L100 140 L190 50 L100 50 M100 50 L160 110" class="accs" opacity=".9"/>`;
+    g+=T(130,26,"draw past the edge","m");
+    break;
+  case "milieu":
+    g+=`<path d="M24 140 H246 M24 140 V14" class="ln"/>`;
+    [[70,50,34,22,"execs"],[150,80,44,26,"analysts"],[90,108,40,20,"ops"],[200,44,30,18,"engineers"]].forEach(([x,y,rx,ry,l],i)=>g+=`<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" class="${i===1?'asoft':'soft'}"/>`+T(x,y+3,l,"m"));
+    g+=T(135,154,"values: traditional → modern","m");
+    g+=`<text transform="translate(14 78) rotate(-90)" text-anchor="middle" class="m">status →</text>`;
+    break;
+  case "loops":
+    g+=`<ellipse cx="150" cy="80" rx="60" ry="34" class="ln" stroke="var(--teal)"/><ellipse cx="130" cy="80" rx="110" ry="62" class="ln2"/>`;
+    g+=`<rect x="20" y="70" width="60" height="20" rx="4" class="asoft"/>`+T(50,84,"assumptions","m");
+    g+=T(150,76,"action","b")+T(150,90,"→ result","m")+T(130,14,"double loop: question the frame","m");
+    break;
+  case "pareto":
+    [70,40,22,14,10,8,6,5,4,3].forEach((v,i)=>{const h=v*1.5;g+=`<rect x="${30+i*21}" y="${140-h}" width="16" height="${h}" class="${i<2?'acc':'soft'}"/>`;});
+    g+=`<path d="M30 112 L51 66 L72 40 L93 25 L114 16 L135 12 L156 9 L177 7 L198 5 L240 4" class="tl"/>`;
+    g+=T(60,154,"20% of causes","m")+T(170,40,"80% of effect","b");
+    break;
+  case "tail":
+    g+=`<path d="M24 140 H246" class="ln"/>`;
+    g+=`<path d="M30 140 L30 20 C40 70 60 100 90 114 C140 128 200 134 246 136 L246 140 Z" class="asoft"/>`;
+    g+=`<path d="M30 140 L30 20 C40 70 60 100 66 104 L66 140 Z" class="soft"/>`;
+    g+=T(48,154,"hits","m")+T(170,120,"long tail","b");
+    break;
+  case "bell":{
+    g+=`<path d="M24 140 H246" class="ln"/>`;
+    let p="M24 140";for(let x=24;x<=230;x+=3){const z=(x-120)/30;p+=` L${x} ${(140-110*Math.exp(-z*z/2)).toFixed(1)}`;}
+    g+=`<path d="${p} L230 140 Z" class="soft"/><path d="${p}" class="tl"/>`;
+    if(d.mc){ const rnd=k=>{const v=Math.sin(k)*43758.5453;return v-Math.floor(v);};for(let i=0;i<60;i++){const x=120+(rnd(i*12.99)+rnd(i*7.13)+rnd(i*3.71)-1.5)*60;const z=(x-120)/30;const y=138-rnd(i*78.23)*108*Math.exp(-(z*z)/2);g+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2" class="acc" opacity=".7"/>`;}
+      g+=`<path d="M156 30 V140" class="ln" stroke-dasharray="3 3"/>`+T(160,24,"80% done by here","m");}
+    if(d.swan){g+=`<circle cx="236" cy="128" r="7" class="acc"/>`+`<path d="M236 120 V60" class="accs" stroke-dasharray="3 3"/>`+T(222,52,"rare, huge","b");}
+    break;}
+  case "chasm":
+    g+=`<path d="M24 140 C50 140 60 100 80 80 L94 140 L104 140 L116 50 C140 10 170 20 190 70 C210 120 230 136 246 140" class="asoft" stroke="var(--accent)" stroke-width="2"/>`;
+    g+=T(64,90,"early","m")+T(99,154,"chasm","b")+T(150,74,"majority","m")+T(226,124,"late","m");
+    break;
+  case "bbox":
+    g+=`<rect x="90" y="40" width="80" height="80" rx="6" style="fill:var(--ink)"/>`+`<text x="130" y="86" text-anchor="middle" style="fill:var(--panel);font:600 18px var(--font-mono)">?</text>`;
+    g+=`<path d="M24 80 H86 M174 80 H236" class="accs"/><path d="M80 74 l6 6 l-6 6 M230 74 l6 6 l-6 6" class="accs"/>`;
+    g+=T(50,70,"input","b")+T(208,70,"output","b")+T(130,140,"vary inputs, watch outputs","m");
+    break;
+  case "seesaw":
+    g+=`<polygon points="130,140 116,120 144,120" class="tf"/><line x1="40" y1="96" x2="220" y2="140" class="ln" stroke-width="3"/>`;
+    g+=`<circle cx="56" cy="86" r="11" class="acc"/><circle cx="204" cy="124" r="11" class="soft" stroke="var(--teal)"/>`;
+    g+=T(56,64,"high status","b")+T(204,104,"low status","m");
+    break;
+  case "payoff":{
+    const c=[["3 / 3","cooperate both"],["0 / 5",""],["5 / 0",""],["1 / 1","both defect"]];
+    c.forEach((v,i)=>{const x=60+(i%2)*90,y=22+Math.floor(i/2)*58;g+=`<rect x="${x}" y="${y}" width="86" height="54" rx="5" class="${i===0?'asoft':'soft'}"/>`+T(x+43,y+28,v[0],"b")+T(x+43,y+42,v[1],"m");});
+    g+=T(103,14,"share","m")+T(193,14,"hoard","m")+`<text transform="translate(48 49) rotate(-90)" text-anchor="middle" class="m">share</text><text transform="translate(48 107) rotate(-90)" text-anchor="middle" class="m">hoard</text>`;
+    break;}
+  case "stages":
+    d.items.forEach((it,i)=>{const x=22+i*32,y=120-i*14;g+=`<rect x="${x}" y="${y}" width="30" height="${140-y}" rx="3" class="${i===5?'acc':'soft'}"/>`+`<text transform="translate(${x+15} ${y-6}) rotate(-35)" class="m">${esc(it)}</text>`;});
+    break;
+  case "cycle":{
+    const n=d.items.length,cx=130,cy=82,R=52;
+    g+=`<circle cx="${cx}" cy="${cy}" r="${R}" class="ln2"/>`;
+    d.items.forEach((it,i)=>{const a=-Math.PI/2+2*Math.PI*i/n;const x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);
+      g+=`<rect x="${x-34}" y="${y-11}" width="68" height="22" rx="11" class="${i===n-1?'asoft':'soft'}" stroke="var(--panel)" stroke-width="2"/>`+T(x,y+4,it,"b");});
+    g+=`<path d="M${cx+14} ${cy-8} A16 16 0 1 1 ${cx-14} ${cy-8}" class="accs"/><path d="M${cx-18} ${cy-14} l4 6 l6 -3" class="accs"/>`;
+    break;}
+  }
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true">${g}</svg>`;
+}
+
+/* ---------- render: stack ---------- */
+const $ = id => document.getElementById(id);
+function renderPresets(){
+  $("presets").innerHTML = Object.keys(PRESETS).map(p=>`<button type="button" aria-pressed="${state.preset===p}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+}
+function renderFields(){
+  $("fields").innerHTML = FIELDS.map(([k,l,w])=>`<div class="field ${w||""}"><label for="f-${k}">${esc(l)}</label><input id="f-${k}" data-k="${k}" value="${esc(state.vals[k]||"")}"></div>`).join("");
+}
+function renderFlow(){
+  const v=state.vals;
+  $("flowline").innerHTML = `<span>${esc(v.platform||"Nexus")}:</span>` + ["sources","ingest","store","transform","serve","ml"].map(k=>`<b>${esc(v[k]||LAYER_NAMES[k])}</b>`).join("<i>→</i>") + `<span>· run by ${esc(v.orch||"…")} · governed in ${esc(v.gov||"…")}</span>`;
+}
+
+/* ---------- render: models ---------- */
+function cardHTML(m){
+  return `<article class="card" id="m${m.n}">
+    <div class="card-top"><span class="n">${String(m.n).padStart(2,"0")}</span><h3>${esc(m.name)}</h3></div>
+    <p class="q">${esc(m.q)}</p>
+    ${draw(m.d)}
+    <p>${esc(m.sum)}</p>
+    <div class="analogy"><span class="lab">In ${fill("{platform}",false)}</span><span class="an">${fill(m.a)}</span></div>
+    <p class="move"><b>Move</b>${fill(m.m)}</p>
+    <div class="tags">${m.L.map(l=>`<span>${esc(LAYER_NAMES[l])}</span>`).join("")}<span style="border-color:transparent;color:${SECTIONS[m.s].c}">● ${esc(SECTIONS[m.s].name)}</span></div>
+  </article>`;
+}
+function visible(m){
+  if(state.sec && m.s!==state.sec) return false;
+  if(state.layer && !m.L.includes(state.layer)) return false;
+  if(state.search){const q=state.search.toLowerCase(); if(!(m.name+" "+m.q+" "+m.sum+" "+m.t).toLowerCase().includes(q)) return false;}
+  return true;
+}
+function renderModels(){
+  let html="",shown=0;
+  Object.entries(SECTIONS).forEach(([k,s])=>{
+    const list=M.filter(m=>m.s===k&&visible(m)); if(!list.length) return; shown+=list.length;
+    html+=`<div class="section-title"><h2 style="color:${s.c}">${esc(s.name)}</h2><span>${list.length} model${list.length>1?"s":""}</span></div><div class="grid">${list.map(cardHTML).join("")}</div>`;
+  });
+  $("models").innerHTML = html || `<p class="box">No model matches these filters. Clear the search or pick another layer.</p>`;
+  $("count").textContent = `Showing ${shown} of ${M.length} models`;
+}
+function renderFilters(){
+  $("secFilters").innerHTML = `<button class="chip" type="button" data-sec="" aria-pressed="${!state.sec}">All parts</button>`+Object.entries(SECTIONS).map(([k,s])=>`<button class="chip" type="button" data-sec="${k}" aria-pressed="${state.sec===k}">${esc(s.name)}</button>`).join("");
+  $("layerFilters").innerHTML = `<button class="chip" type="button" data-layer="" aria-pressed="${!state.layer}">Any layer</button>`+LAYERS.map(l=>`<button class="chip" type="button" data-layer="${l}" aria-pressed="${state.layer===l}">${esc(LAYER_NAMES[l])}</button>`).join("");
+}
+
+/* ---------- finder ---------- */
+const SAMPLES=["We have too many pipelines failing and no time to fix them","Should we migrate from our warehouse to a lakehouse?","Sales and finance disagree on the revenue number","Nobody outside the analysts uses our dashboards","How do we estimate the migration timeline?","Is the new AI tool worth adopting now?"];
+const STOP=new Set("the a an and or to of in on for we our is are be it this that with how do does should what why who which from at by as not no have has too i my me you your".split(" "));
+function rank(text){
+  const words=text.toLowerCase().replace(/[^a-z0-9\s]/g," ").split(/\s+/).filter(w=>w.length>2&&!STOP.has(w));
+  if(!words.length) return [];
+  return M.map(m=>{
+    const hay=(m.t+" "+m.name+" "+m.q).toLowerCase(); const tagw=m.t.split(" ");
+    let score=0,hits=[];
+    words.forEach(w=>{const stem=w.replace(/(ing|ed|es|s)$/,"");
+      if(tagw.some(t=>t===w||t.startsWith(stem)&&stem.length>3)){score+=3;hits.push(w);}
+      else if(stem.length>3&&hay.includes(stem)){score+=1;hits.push(w);} });
+    return {m,score,hits:[...new Set(hits)]};
+  }).filter(r=>r.score>0).sort((a,b)=>b.score-a.score).slice(0,5);
+}
+function renderMatches(){
+  const r=rank(state.problem);
+  $("matches").innerHTML = !state.problem.trim() ? "" : r.length ? r.map(({m,hits})=>`<li><a href="#m${m.n}" data-jump="${m.n}"><span class="num">${String(m.n).padStart(2,"0")}</span><span>${esc(m.name)}</span><span class="why">${esc(hits.slice(0,3).join(", "))}</span></a></li>`).join("")
+    : `<li class="hint" style="color:var(--muted);font-size:14px">No clear match. Try words like prioritise, migrate, risk, adoption, team or estimate.</li>`;
+}
+
+/* ---------- your own model ---------- */
+function renderOwnFields(){
+  const f=[["x","Axis across"],["y","Axis up"],["q1","Top left"],["q2","Top right"],["q3","Bottom left"],["q4","Bottom right"]];
+  $("ownFields").innerHTML=f.map(([k,l])=>`<div class="field"><label for="o-${k}">${l}</label><input id="o-${k}" data-o="${k}" value="${esc(state.own[k]||"")}"></div>`).join("");
+}
+function renderOwn(){const o=state.own;$("ownDiagram").innerHTML=draw({k:"m2",x:(o.x||"")+" →",y:(o.y||"")+" →",q:[o.q1,o.q2,o.q3,o.q4],hi:1});}
+
+/* ---------- live updates ---------- */
+function refreshAnalogies(){
+  document.querySelectorAll(".card").forEach(c=>{
+    const m=M[+c.id.slice(1)-1];
+    c.querySelector(".lab").textContent="In "+((state.vals.platform||"").trim()||"your platform");
+    c.querySelector(".an").innerHTML=fill(m.a);
+    c.querySelector(".move").innerHTML=`<b>Move</b>${fill(m.m)}`;
+  });
+  renderFlow();
+}
+
+$("legend").innerHTML = Object.values(SECTIONS).map(s=>`<span style="--c:${s.c}">${esc(s.name)}</span>`).join("")+`<span style="--c:var(--accent-soft)">highlighted = your stack</span>`;
+$("samples").innerHTML = SAMPLES.map(s=>`<button class="chip" type="button" data-sample="${esc(s)}">${esc(s)}</button>`).join("");
+$("problem").value = state.problem || SAMPLES[0];
+state.problem = $("problem").value;
+
+renderPresets(); renderFields(); renderFlow(); renderFilters(); renderModels(); renderMatches(); renderOwnFields(); renderOwn();
+
+$("presets").addEventListener("click",e=>{const p=e.target.dataset.p;if(!p)return;state.preset=p;state.vals={...PRESETS[p]};renderPresets();renderFields();refreshAnalogies();save();});
+$("fields").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;state.vals[k]=e.target.value;state.preset=null;renderPresets();refreshAnalogies();save();});
+$("problem").addEventListener("input",e=>{state.problem=e.target.value;renderMatches();save();});
+$("samples").addEventListener("click",e=>{const s=e.target.dataset.sample;if(!s)return;$("problem").value=s;state.problem=s;renderMatches();save();});
+$("search").addEventListener("input",e=>{state.search=e.target.value;renderModels();});
+$("secFilters").addEventListener("click",e=>{if(e.target.dataset.sec===undefined)return;state.sec=e.target.dataset.sec||null;renderFilters();renderModels();});
+$("layerFilters").addEventListener("click",e=>{if(e.target.dataset.layer===undefined)return;state.layer=e.target.dataset.layer||null;renderFilters();renderModels();});
+$("matches").addEventListener("click",e=>{const a=e.target.closest("[data-jump]");if(!a)return;
+  if(!document.getElementById("m"+a.dataset.jump)){state.sec=null;state.layer=null;state.search="";$("search").value="";renderFilters();renderModels();}});
+$("ownFields").addEventListener("input",e=>{const k=e.target.dataset.o;if(!k)return;state.own[k]=e.target.value;renderOwn();save();});
+})();
+</script>
+</body>
+</html>
