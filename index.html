@@ -98,7 +98,7 @@ header.hero{padding-block:48px 28px}
 .el:hover{border-color:var(--g);transform:translateY(-2px)}
 .el[aria-pressed="true"]{background:var(--g);border-color:var(--g);color:#fff}
 .el[aria-pressed="true"] .sym,.el[aria-pressed="true"] .z,.el[aria-pressed="true"] .kind{color:#fff}
-.pt-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:14px}
+.pt-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
 @media (max-width:760px){.pt-foot{grid-template-columns:1fr}}
 .pt-detail{display:flex;gap:14px;align-items:flex-start;min-height:96px;min-width:0}
 .pt-detail .big{flex:none;width:84px;height:84px;border-radius:8px;background:var(--g);color:#fff;display:flex;flex-direction:column;padding:6px 8px}
@@ -158,7 +158,8 @@ header.hero{padding-block:48px 28px}
 @media (max-width:600px){.stage{padding:14px}}
 .stage .ptable-box,.stage .stack{border:0;padding:0;background:transparent;margin-bottom:18px}
 .stage .stack{padding-bottom:18px;border-bottom:1px dashed var(--line);margin-bottom:20px}
-.pt-foot{margin-bottom:6px}
+.pt-foot{margin:0 0 12px;padding:10px 0;background:var(--panel);border-bottom:1px solid var(--line)}
+@media (min-width:761px){.pt-foot{position:sticky;top:env(safe-area-inset-top,0px);z-index:5}}
 .stage-nav{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
 .navbtn{font:600 14px var(--font-body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer}
 .navbtn:disabled{opacity:.35;cursor:default}
@@ -300,6 +301,39 @@ mark .ti{margin-right:.25em}
 .bf-w{font-size:12.5px;color:var(--muted)}
 .flowline b{display:inline-flex;align-items:center}
 
+
+
+.toggle.multi{margin:8px 0 2px;font-size:13.5px}
+.toggle.multi .hint{color:var(--muted);font-size:12.5px}
+.xchips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.xchips:empty{display:none}
+.xchip{display:inline-flex;align-items:center;font-size:12px;background:var(--teal-soft);border-radius:999px;padding:2px 4px 2px 9px}
+.xchip button{border:0;background:none;color:var(--muted);font-size:14px;line-height:1;cursor:pointer;padding:0 5px}
+.xchip button:hover{color:#c4473a}
+.xadd{font:12px var(--font-body)!important;padding:3px 8px!important;border-radius:999px!important;width:auto!important;color:var(--muted)!important}
+
+/* Cost */
+.costbox{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--bg)}
+.costbox.compact{background:var(--panel)}
+.cost-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-end}
+.cost-total{font:800 32px/1.1 var(--font-display);font-variant-numeric:tabular-nums;margin-top:4px}
+.cost-total small{font:500 14px var(--font-body);color:var(--muted);margin-left:4px}
+.cost-sub{font:12.5px var(--font-mono);color:var(--muted)}
+.cost-ctl{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+.cost-ctl label{display:flex;gap:6px;align-items:center}
+.cost-ctl select,.cost-ctl input{font:13px var(--font-body);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:5px 8px}
+.cost-ctl input{width:90px}
+.cost-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;gap:2px;margin:12px 0 6px;background:var(--line)}
+.cost-bar span{display:block;background:var(--g);min-width:3px}
+.cost-verdict{font:600 13px var(--font-mono);margin:4px 0 8px}
+.cost-verdict.over{color:#c4473a}.cost-verdict.ok{color:#3f9a5a}
+.cost-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:4px 18px;font-size:13.5px}
+.costbox.compact .cost-list{grid-template-columns:1fr}
+.cost-list li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--line);padding:3px 0;min-width:0}
+.cl-n{min-width:0}.cl-n em{display:block;font:11px var(--font-mono);font-style:normal;color:var(--muted)}
+.cl-v{font:600 13px var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (prefers-reduced-motion:no-preference){.cost-bar span{transition:flex .5s}}
+
 /* Finder */
 .finder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-bottom:22px}
 @media (max-width:820px){.finder{grid-template-columns:1fr}}
@@ -395,12 +429,14 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
   <section class="stack" aria-labelledby="stack-h">
     <div class="stack-head">
       <div><div class="eyebrow">Step 1 · Your stack</div><h2 id="stack-h" style="margin-top:6px">Start from a preset or pick each layer</h2></div>
-      <div class="headbtns"><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
+      <div class="headbtns"><span class="mini" title="Estimated monthly cost">≈ <b id="miniCost">–</b>/mo</span><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
     </div>
     <p class="hint" style="color:var(--muted);font-size:14px;margin:6px 0 0">Pre-filled with example tools. Replace them with yours; your choices stay in this browser.</p>
     <div class="presets" id="presets" role="group" aria-label="Example stacks"></div>
+    <label class="toggle multi"><input type="checkbox" id="multiPick"> Allow several tools per layer <span class="hint">(click a tile again to remove it)</span></label>
     <div class="pipeline" id="fields"></div>
     <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
+    <div class="costbox" id="costBox"></div>
   </section>
   <section class="box ptable-box" aria-labelledby="pt-h">
     <div class="stack-head">
@@ -408,11 +444,11 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
     </div>
     <p class="hint">Nine groups: your cloud, then one per pipeline layer. Set your context and the table marks the best fit in each group (★) and the ones that cannot run in your environment (✕). Hover an element to see why; click it to put it in your stack.</p>
     <div class="fitbar" id="fitBar" aria-label="Your context"></div>
-    <div class="pt-scroll"><div class="ptable" id="ptable"></div></div>
     <div class="pt-foot">
-      <div class="pt-detail" id="ptDetail"><p class="hint" style="margin:0">Hover or focus an element to read it.</p></div>
+      <div class="pt-detail" id="ptDetail"><p class="hint" style="margin:0">Hover or focus an element below to see what it is and why it fits your context.</p></div>
       <div class="compound"><div class="eyebrow">Your compound</div><div class="formula" id="formula"></div><p class="hint" id="stability" style="margin:6px 0 0"></p></div>
     </div>
+    <div class="pt-scroll"><div class="ptable" id="ptable"></div></div>
     <div class="bestfit-box">
       <div class="stack-head"><h3>Best fit per layer for your context</h3><button type="button" class="chip" id="useBest">Use all best fits</button></div>
       <ul class="bestfits" id="bestFits"></ul>
@@ -501,13 +537,13 @@ const LAYERS = ["cloud","sources","ingest","store","transform","orch","serve","m
 const LAYER_NAMES = {cloud:"Cloud",sources:"Sources",ingest:"Ingestion",store:"Storage",transform:"Transform",orch:"Orchestration",serve:"Serving",ml:"ML / AI",gov:"Governance"};
 
 const PRESETS = {
-  "Open lakehouse":{platform:"Nexus",cloud:"AWS",sources:"SAP ERP",ingest:"Airbyte",store:"Apache Iceberg",transform:"dbt",orch:"Dagster",serve:"Apache Superset",ml:"Feast",gov:"DataHub",team:"the data team",goal:"trusted daily KPIs for every department"},
-  "Cloud warehouse":{platform:"Nexus",cloud:"AWS",sources:"Salesforce",ingest:"Fivetran",store:"Snowflake",transform:"dbt",orch:"Apache Airflow",serve:"Looker",ml:"Snowpark ML",gov:"Atlan",team:"the analytics engineers",goal:"one revenue number everyone agrees on"},
-  "Microsoft modern":{platform:"Nexus",cloud:"Microsoft Azure",sources:"SQL Server",ingest:"Azure Data Factory",store:"Microsoft Fabric",transform:"Fabric notebooks",orch:"Fabric Data Factory",serve:"Power BI",ml:"Azure Machine Learning",gov:"Microsoft Purview",team:"the BI team",goal:"move every report into Power BI on Fabric"},
+  "Open lakehouse":{platform:"Nexus",cloud:"AWS",sources:"SAP ERP",ingest:"Airbyte",store:"Apache Iceberg",transform:"dbt",orch:"Dagster",serve:"Apache Superset",ml:"Feast",gov:"DataHub",team:"the data team",goal:"trusted daily KPIs for every department",extra:{sources:["IoT sensors","PostgreSQL"],gov:["Great Expectations"]}},
+  "Cloud warehouse":{platform:"Nexus",cloud:"AWS",sources:"Salesforce",ingest:"Fivetran",store:"Snowflake",transform:"dbt",orch:"Apache Airflow",serve:"Looker",ml:"Snowpark ML",gov:"Atlan",team:"the analytics engineers",goal:"one revenue number everyone agrees on",extra:{sources:["Stripe","PostgreSQL"]}},
+  "Microsoft modern":{platform:"Nexus",cloud:"Microsoft Azure",sources:"SQL Server",ingest:"Azure Data Factory",store:"Microsoft Fabric",transform:"Fabric notebooks",orch:"Fabric Data Factory",serve:"Power BI",ml:"Azure Machine Learning",gov:"Microsoft Purview",team:"the BI team",goal:"move every report into Power BI on Fabric",extra:{sources:["Dynamics 365"]}},
   "Microsoft classic":{platform:"Nexus",cloud:"On-premise",sources:"SQL Server",ingest:"SSIS",store:"SQL Server DW",transform:"T-SQL stored procedures",orch:"SQL Server Agent",serve:"SSRS",ml:"Notebooks",gov:"A shared README",team:"the DBA team",goal:"keep month-end reports on time"},
   "AWS native":{platform:"Nexus",cloud:"AWS",sources:"Amazon Aurora",ingest:"AWS DMS",store:"Amazon Athena",transform:"dbt",orch:"AWS Step Functions",serve:"QuickSight",ml:"Amazon Bedrock",gov:"Lake Formation",team:"the cloud data team",goal:"pay-per-query analytics without servers"},
   "Google native":{platform:"Nexus",cloud:"Google Cloud",sources:"Cloud SQL",ingest:"Datastream",store:"BigQuery",transform:"Dataform",orch:"Managed Airflow",serve:"Looker Studio",ml:"BigQuery ML",gov:"Dataplex",team:"the analytics team",goal:"near-real-time sales dashboards"},
-  "Streaming":{platform:"Nexus",cloud:"Google Cloud",sources:"Clickstream events",ingest:"Apache Kafka",store:"ClickHouse",transform:"Apache Flink",orch:"Argo Workflows",serve:"Grafana",ml:"MLflow",gov:"OpenMetadata",team:"the platform squad",goal:"sub-minute fraud alerts"},
+  "Streaming":{platform:"Nexus",cloud:"Google Cloud",sources:"Clickstream events",ingest:"Apache Kafka",store:"ClickHouse",transform:"Apache Flink",orch:"Argo Workflows",serve:"Grafana",ml:"MLflow",gov:"OpenMetadata",team:"the platform squad",goal:"sub-minute fraud alerts",extra:{sources:["PostgreSQL"],ingest:["Debezium"]}},
   "Lean start":{platform:"Nexus",cloud:"On-premise",sources:"PostgreSQL",ingest:"Python scripts",store:"DuckDB",transform:"Plain SQL views",orch:"cron",serve:"Metabase",ml:"Notebooks",gov:"A shared README",team:"two engineers",goal:"replace weekly Excel reports"}
 };
 
@@ -530,6 +566,14 @@ const GROUP_HUE = {cloud:"#6b7a8f",sources:"#c2702a",ingest:"#3b8aa0",store:"#4f
 const CLOUD_CODE = {"AWS":"aws","Microsoft Azure":"az","Google Cloud":"gcp","Alibaba Cloud":"ali","On-premise":"onprem","Hybrid":"hybrid","Kubernetes anywhere":"k8s"};
 const CLOUD_LABEL = {aws:"AWS",az:"Azure",gcp:"Google Cloud",ali:"Alibaba Cloud",onprem:"on-premise",hybrid:"a hybrid setup",k8s:"Kubernetes"};
 const toolOf = (k,name) => TOOLS[k] && TOOLS[k].find(t=>t[1]===name);
+/* Several tools per layer: state.vals[k] is the main one, state.extra[k] the others */
+const picks = k => [...new Set([state.vals[k], ...((state.extra||{})[k]||[])].filter(Boolean))];
+function togglePick(k,name){
+  state.extra=state.extra||{}; const ex=(state.extra[k]||[]).filter(n=>n!==state.vals[k]);
+  if(!state.multi){ state.vals[k]=name; state.extra[k]=[]; return; }
+  if(state.vals[k]===name){ if(ex.length){state.vals[k]=ex[0];state.extra[k]=ex.slice(1);} return; }
+  state.extra[k] = ex.includes(name) ? ex.filter(n=>n!==name) : [...ex,name];
+}
 const findTool = name => { for(const k of LAYERS){const t=toolOf(k,name); if(t) return [k,t];} return null; };
 /* Icon: brand mark from Simple Icons when one exists, else a small element badge */
 function iconHTML(k,t,cls="ti"){
@@ -539,10 +583,67 @@ function iconHTML(k,t,cls="ti"){
 }
 const iconFor = (k,name,cls) => iconHTML(k,toolOf(k,name),cls);
 
+
+/* ---------- monthly cost estimate ----------
+   Rough USD per month at three scales: [small ≈100 GB & 10 users, medium ≈1 TB & 50 users, large 10+ TB & 300 users].
+   Licence or usage fees plus the servers a tool needs; salaries are not included. Ballparks from public list prices. */
+const COST = {
+  "AWS":[50,300,1500],"Microsoft Azure":[50,300,1500],"Google Cloud":[50,300,1500],"Alibaba Cloud":[40,250,1200],"On-premise":[300,1000,4000],"Hybrid":[400,1300,5000],"Kubernetes anywhere":[250,900,3500],
+  "Airbyte":[50,300,1500],"Fivetran":[500,2500,12000],"Azure Data Factory":[50,400,2500],"SSIS":[100,400,1500],"AWS Glue":[50,500,3000],"AWS DMS":[100,400,1500],"Debezium":[80,400,1500],"Apache Kafka":[300,1500,6000],"dlt":[20,100,500],"Meltano":[30,150,600],"Apache NiFi":[150,600,2500],"Python scripts":[10,50,200],"Amazon Kinesis":[50,400,2500],"Amazon AppFlow":[30,300,1500],"Pub/Sub":[20,300,2000],"Datastream":[50,400,2500],"Cloud Data Fusion":[300,1300,3000],"BigQuery Data Transfer":[0,50,300],
+  "Snowflake":[300,2500,15000],"BigQuery":[20,600,5000],"Microsoft Fabric":[270,2100,8400],"Azure Synapse":[300,2500,10000],"Redshift":[150,1500,8000],"MaxCompute":[50,600,4000],"Databricks":[300,3000,15000],"Apache Iceberg":[100,800,4000],"Delta Lake":[100,800,4000],"ClickHouse":[100,600,3000],"DuckDB":[0,20,100],"Postgres replica":[50,300,1500],"SQL Server DW":[300,1500,5000],"Trino":[200,1200,5000],"Amazon Athena":[10,150,1500],"S3 data lake":[30,300,2500],"Cloud Storage lake":[30,300,2500],"Bigtable":[500,1500,6000],
+  "dbt":[0,50,300],"SQLMesh":[0,50,300],"Apache Spark":[200,1500,8000],"Apache Flink":[300,1500,6000],"Dataform":[0,20,100],"Fabric notebooks":[0,0,0],"Polars":[0,30,200],"Coalesce":[500,1500,4000],"T-SQL stored procedures":[0,0,0],"Plain SQL views":[0,0,0],"Amazon EMR":[150,1200,8000],"Managed Flink on AWS":[200,1000,5000],"Dataflow":[100,800,5000],"Dataproc":[100,1000,6000],
+  "Apache Airflow":[100,400,1500],"Managed Airflow":[400,800,2500],"Dagster":[50,300,1200],"Prefect":[30,200,1000],"Fabric Data Factory":[0,0,0],"Argo Workflows":[50,200,800],"Kestra":[50,200,800],"Mage":[30,150,600],"AWS Step Functions":[5,50,300],"SQL Server Agent":[0,0,0],"cron":[0,0,0],"Cloud Workflows":[5,30,200],"Amazon EventBridge":[5,30,200],
+  "Power BI":[140,700,4200],"Looker":[2500,5000,15000],"Tableau":[400,2000,10000],"QuickSight":[50,300,1500],"SSRS":[0,0,0],"Excel":[0,0,0],"Apache Superset":[50,200,800],"Metabase":[30,150,600],"Grafana":[30,150,600],"Streamlit":[20,100,500],"Cube":[50,300,1500],"Evidence":[0,20,100],"Looker Studio":[0,0,450],
+  "MLflow":[50,200,800],"Feast":[100,500,2000],"SageMaker":[200,1500,8000],"Vertex AI":[200,1500,8000],"Azure Machine Learning":[200,1500,8000],"PAI":[150,1200,6000],"Snowpark ML":[100,800,4000],"Ray":[200,1500,8000],"LLM via Claude API":[100,1000,8000],"pgvector":[0,50,300],"Notebooks":[0,20,100],"Amazon Bedrock":[100,1000,8000],"BigQuery ML":[20,300,2000],"Gemini on Vertex AI":[100,1000,8000],
+  "Microsoft Purview":[100,600,3000],"Dataplex":[50,400,2000],"DataHub":[150,500,2000],"OpenMetadata":[150,500,2000],"Atlan":[2500,5000,12000],"Unity Catalog":[0,50,300],"Collibra":[5000,10000,25000],"Great Expectations":[0,50,300],"Soda":[0,50,300],"Monte Carlo":[2000,5000,12000],"A shared README":[0,0,0],"Glue Data Catalog":[0,10,100],"Lake Formation":[0,0,50],"Amazon DataZone":[20,200,1000]
+};
+const SCALES = [["small","Small data (≈100 GB, 10 users)"],["medium","Medium data (≈1 TB, 50 users)"],["large","Large data (10+ TB, 300 users)"]];
+const SI = {small:0,medium:1,large:2};
+const usd = n => "$"+Math.round(n).toLocaleString("en-US");
+const idr = n => new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0}).format(Math.round(n*(state.rate||16500)/1000)*1000);
+/* One tool's monthly cost in your current stack, with a note when it rides on another product's licence */
+function costOf(k,name){
+  const i=SI[state.fit.scale||"medium"], v=state.vals;
+  if(k==="sources") return {c:0,note:"Already running; not counted"};
+  if(!toolOf(k,name)) return {c:null,note:"Custom tool: no estimate"};
+  if(/^Fabric (notebooks|Data Factory)$/.test(name)) return v.store==="Microsoft Fabric"?{c:0,note:"Included in your Fabric capacity"}:{c:COST["Microsoft Fabric"][i],note:"Needs a Fabric capacity"};
+  const MSSQL=["SSIS","SQL Server Agent","T-SQL stored procedures","SSRS"];
+  if(MSSQL.includes(name)){ const base=name==="SSIS"?COST.SSIS[i]:0;
+    if(v.store==="SQL Server DW") return {c:base,note:"Uses your SQL Server licence"};
+    const first=LAYERS.find(l=>MSSQL.includes(v[l]));
+    return first===k?{c:base+[300,1000,3000][i],note:"Includes a SQL Server licence"}:{c:base,note:"Shares the SQL Server licence"}; }
+  if(name==="Unity Catalog"&&v.store==="Databricks") return {c:0,note:"Included with Databricks"};
+  if(name==="Power BI"&&v.store==="Microsoft Fabric"&&i>=1) return {c:Math.round(COST["Power BI"][i]*.3),note:"Viewers free on F64+; authors still need Pro"};
+  const c=COST[name]; return {c:c?c[i]:0,note:""};
+}
+function stackCost(){
+  const items=LAYERS.flatMap(k=>picks(k).map(name=>({k,name,...costOf(k,name)})));
+  const total=items.reduce((a,x)=>a+(x.c||0),0);
+  return {items,total};
+}
+const BUDGET_CAP = {lean:[300,1500,6000],moderate:[1500,6000,25000],enterprise:[6000,25000,100000]};
+function costHTML(compact){
+  const {items,total}=stackCost(), sc=state.fit.scale||"medium", cap=BUDGET_CAP[state.fit.budget][SI[sc]];
+  const over = total>cap;
+  const bars = items.filter(x=>x.c>0).map(x=>`<span style="--g:${GROUP_HUE[x.k]};flex:${x.c}" title="${esc(x.name)}: ${usd(x.c)}"></span>`).join("");
+  return `<div class="cost-head">
+      <div><div class="eyebrow">Monthly estimate</div><div class="cost-total">${usd(total)}<small>/month</small></div>
+        <div class="cost-sub">≈ ${idr(total)} per month · ${usd(total*12)} per year</div></div>
+      ${compact?"":`<div class="cost-ctl"><label>Scale <select id="cost-scale" data-scale>${SCALES.map(([v,l])=>`<option value="${v}"${sc===v?" selected":""}>${esc(l)}</option>`).join("")}</select></label>
+        <label>1 USD = Rp <input id="cost-rate" type="number" min="1000" step="100" value="${state.rate||16500}"></label></div>`}
+    </div>
+    <div class="cost-bar" aria-hidden="true">${bars||"<span style='flex:1;--g:var(--line)'></span>"}</div>
+    <p class="cost-verdict ${over?"over":"ok"}">${over?`Above a ${state.fit.budget} budget at this scale (about ${usd(cap)}/month).`:`Within a ${state.fit.budget} budget at this scale (up to about ${usd(cap)}/month).`}</p>
+    <ul class="cost-list">${items.map(x=>`<li><span class="cl-n">${iconFor(x.k,x.name)}${esc(x.name)}<em>${esc(LAYER_NAMES[x.k])}${x.note?" · "+esc(x.note):""}</em></span><span class="cl-v">${x.c==null?"–":x.c===0?"$0":usd(x.c)}</span></li>`).join("")}</ul>
+    <p class="hint small">Ballpark from public list prices: licences, usage and the servers each tool needs, without salaries or data transfer. Open-source tools are priced as self-hosted infrastructure. Check vendor calculators before you budget.</p>`;
+}
+function renderCost(){ if($("costBox")) $("costBox").innerHTML=costHTML(false); const t=stackCost().total; if($("miniCost")) $("miniCost").textContent=usd(t); }
+
 /* ---------- fit: which element suits your context, and why ---------- */
 const FIT_OPTS = {
   team:[["small","Small team (1–3)"],["mid","Mid team (4–10)"],["large","Large team (10+)"]],
   budget:[["lean","Lean budget"],["moderate","Moderate budget"],["enterprise","Enterprise budget"]],
+  scale:SCALES,
   latency:[["daily","Daily batch"],["hourly","Hourly"],["realtime","Real-time"]],
   skill:[["sql","SQL-first team"],["python","Python team"],["lowcode","Low-code team"],["ms","Microsoft shop"]]
 };
@@ -566,6 +667,8 @@ function fitOf(k,t){
     if(t[1]==="Hybrid") add(f.team==="large"?1:-2, f.team==="large"?"Possible with a large team":"Two environments to run");
   }
   if(f.budget==="lean"){ if(kind==="OSS"||kind==="DIY") add(2,"Free to run"); if(kind==="SaaS"||kind==="Licensed") add(-2,"Licence or usage fees"); if(tr.includes("enterprise")) add(-1,"Priced for enterprises"); }
+  const pc=COST[t[1]]; if(pc&&k!=="sources"){const m=pc[SI[f.scale||"medium"]]; const lim=f.budget==="lean"?500:f.budget==="moderate"?3000:1e9;
+    if(m>lim) add(-2,`About ${usd(m)}/month at your scale`); else if(m===0&&f.budget!=="enterprise") add(1,"Nothing extra to pay");}
   if(f.budget==="enterprise"){ if(tr.includes("enterprise")) add(2,"Enterprise support and controls"); if(kind==="DIY") add(-3,"Hand-made, nobody to call"); }
   if(f.team==="small"){ if(tr.includes("ops")) add(-3,"Needs a team to operate"); if(kind==="SaaS"||kind==="Cloud") add(2,"Managed, little upkeep"); if(tr.includes("lean")) add(1,"Light to run"); }
   if(f.team==="large"){ if(tr.includes("enterprise")) add(1,"Scales to many users and teams"); if(kind==="DIY") add(-2,"Hard to share across a large team"); }
@@ -847,14 +950,16 @@ const M = [
 
 /* ---------- state ---------- */
 const KEY = "nexus-atlas-v3";
-let state = {fit:{team:"mid",budget:"moderate",latency:"daily",skill:"sql"}, hl:true, preset:"Open lakehouse", vals:{...PRESETS["Open lakehouse"]}, problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
-try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, sec:null, layer:null, search:""}; } catch(e){}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({fit:state.fit, hl:state.hl, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
+let state = {multi:true, extra:JSON.parse(JSON.stringify(PRESETS["Open lakehouse"].extra||{})), fit:{team:"mid",budget:"moderate",scale:"medium",latency:"daily",skill:"sql"}, hl:true, rate:16500, preset:"Open lakehouse", vals:(({extra,...r})=>r)(PRESETS["Open lakehouse"]), problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
+try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, fit:{...state.fit,...(s.fit||{})}, sec:null, layer:null, search:""}; } catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({multi:state.multi, extra:state.extra, fit:state.fit, hl:state.hl, rate:state.rate, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (tpl, hl=true) => esc(tpl).replace(/\{(\w+)\}/g, (_, k) => {
-  const v = (state.vals[k]||"").trim() || (LAYER_NAMES[k]||k).toLowerCase();
-  return hl ? `<mark>${TOOLS[k]?iconFor(k,v):""}${esc(v)}</mark>` : esc(v);
+  const all = TOOLS[k] ? picks(k) : [(state.vals[k]||"").trim()].filter(Boolean);
+  if(!all.length) all.push((LAYER_NAMES[k]||k).toLowerCase());
+  const list = all.length>3 ? [...all.slice(0,2), `${all.length-2} more`] : all;
+  return hl ? list.map(v=>`<mark>${TOOLS[k]?iconFor(k,v):""}${esc(v)}</mark>`).join(" + ") : esc(list.length>1?list.slice(0,-1).join(", ")+" and "+list[list.length-1]:list[0]);
 });
 
 /* ---------- diagrams ---------- */
@@ -1086,16 +1191,22 @@ function renderFields(){
     const kn=known(k,v);
     return `<div class="field"><label for="f-${k}"><span class="lic" id="li-${k}">${iconFor(k,v)}</span>${esc(l)}</label>
       <select id="f-${k}" data-sel="${k}">${TOOLS[k].map(t=>`<option value="${esc(t[1])}"${t[1]===v?" selected":""}>${esc(t[0])} · ${esc(t[1])}</option>`).join("")}<option value="__other"${kn?"":" selected"}>Other: type your own</option></select>
-      <input id="c-${k}" data-k="${k}" aria-label="${esc(l)}, your own tool" placeholder="Your tool" value="${kn?"":esc(v)}"${kn?" hidden":""}></div>`;
+      <input id="c-${k}" data-k="${k}" aria-label="${esc(l)}, your own tool" placeholder="Your tool" value="${kn?"":esc(v)}"${kn?" hidden":""}>
+      <div class="xchips" id="x-${k}">${extraChips(k)}</div></div>`;
   }).join("");
+}
+function extraChips(k){
+  const ex=((state.extra||{})[k]||[]).filter(n=>n!==state.vals[k]);
+  return ex.map(n=>`<span class="xchip">${iconFor(k,n)}${esc(n)}<button type="button" data-rmk="${k}" data-rmn="${esc(n)}" aria-label="Remove ${esc(n)}">×</button></span>`).join("")
+    + (state.multi?`<select class="xadd" data-addk="${k}" aria-label="Add another ${esc(LAYER_NAMES[k])} tool"><option value="">+ add another</option>${TOOLS[k].filter(t=>!picks(k).includes(t[1])).map(t=>`<option value="${esc(t[1])}">${esc(t[0])} · ${esc(t[1])}</option>`).join("")}</select>`:"");
 }
 function syncSelects(){
   LAYERS.forEach(k=>{const sel=$("f-"+k),inp=$("c-"+k);if(!sel)return;const v=state.vals[k]||"",kn=known(k,v);
-    sel.value=kn?v:"__other";inp.hidden=kn;if(!kn&&document.activeElement!==inp)inp.value=v;$("li-"+k).innerHTML=iconFor(k,v);});
+    sel.value=kn?v:"__other";inp.hidden=kn;if(!kn&&document.activeElement!==inp)inp.value=v;$("li-"+k).innerHTML=iconFor(k,v);$("x-"+k).innerHTML=extraChips(k);});
 }
 function renderFlow(){
   const v=state.vals;
-  $("flowline").innerHTML = `<span>${esc(v.platform||"Nexus")}:</span>` + ["sources","ingest","store","transform","serve","ml"].map(k=>`<b>${iconFor(k,v[k])}${esc(v[k]||LAYER_NAMES[k])}</b>`).join("<i>→</i>") + `<span>· run by ${iconFor("orch",v.orch)}${esc(v.orch||"…")} · governed in ${iconFor("gov",v.gov)}${esc(v.gov||"…")} · on ${iconFor("cloud",v.cloud)}${esc(v.cloud||"…")}</span>`;
+  $("flowline").innerHTML = `<span>${esc(v.platform||"Nexus")}:</span>` + ["sources","ingest","store","transform","serve","ml"].map(k=>`<b>${picks(k).map(n=>iconFor(k,n)+esc(n)).join("&nbsp;+&nbsp;")||esc(LAYER_NAMES[k])}</b>`).join("<i>→</i>") + `<span>· run by ${iconFor("orch",v.orch)}${esc(v.orch||"…")} · governed in ${iconFor("gov",v.gov)}${esc(v.gov||"…")} · on ${iconFor("cloud",v.cloud)}${esc(v.cloud||"…")}</span>`;
 }
 
 /* ---------- render: models ---------- */
@@ -1171,6 +1282,7 @@ function refreshAnalogies(){
   document.querySelectorAll(".pname").forEach(e=>e.textContent=(state.vals.platform||"").trim()||"your platform");
   document.querySelectorAll(".pgoal").forEach(e=>e.textContent=(state.vals.goal||"").trim()||"better data");
   if($("miniScore")) renderMini();
+  renderCost();
 }
 
 $("samples").innerHTML = SAMPLES.map(s=>`<button class="chip" type="button" data-sample="${esc(s)}">${esc(s)}</button>`).join("");
@@ -1193,13 +1305,14 @@ function renderTable(){
 function updateTable(react){
   const R=fitRanks();
   $("ptable").classList.toggle("hlmode",!!state.hl);
-  document.querySelectorAll("#ptable .el").forEach(b=>{b.setAttribute("aria-pressed", String(state.vals[b.dataset.k]===b.dataset.name));
+  document.querySelectorAll("#ptable .el").forEach(b=>{b.setAttribute("aria-pressed", String(picks(b.dataset.k).includes(b.dataset.name)));
     const f=R[b.dataset.k+"|"+b.dataset.name]; b.dataset.fit=f.level; b.querySelector(".fitb").textContent=f.level==="best"?"★":f.level==="na"?"✕":"";
     b.title=`${b.dataset.name}: ${f.level==="best"?"best fit":f.level==="good"?"good fit":f.level==="na"?"not available here":"possible"}`;});
   renderBestFits(R);
-  const parts=LAYERS.map(k=>{const t=(TOOLS[k].find(t=>t[1]===state.vals[k]));return t?{s:t[0],k,kind:t[2]}:{s:"X",k,kind:"Custom"};}).filter(p=>p.k!=="cloud"||p.s!=="X");
+  const parts=LAYERS.map(k=>{const ts=picks(k).map(n=>toolOf(k,n));if(!ts.length||ts.some(t=>!t)) return {s:"X",k,kind:"Custom",n:1};
+    return {s:ts.map(t=>t[0]).join("+"),k,kind:ts[0][2],kinds:ts.map(t=>t[2]),n:ts.length};}).filter(p=>p.k!=="cloud"||p.s!=="X");
   $("formula").innerHTML = parts.map(p=>`<span style="--g:${GROUP_HUE[p.k]}" title="${esc(LAYER_NAMES[p.k])}">${esc(p.s)}</span>`).join("<i>·</i>");
-  const tp=parts.filter(p=>p.k!=="cloud"), oss=tp.filter(p=>p.kind==="OSS").length, saas=tp.filter(p=>p.kind==="SaaS"||p.kind==="Cloud"||p.kind==="Licensed").length, diy=tp.filter(p=>p.kind==="DIY").length;
+  const tp=parts.filter(p=>p.k!=="cloud"), ks=tp.flatMap(p=>p.kinds||[p.kind]), oss=ks.filter(x=>x==="OSS").length, saas=ks.filter(x=>x==="SaaS"||x==="Cloud"||x==="Licensed").length, diy=ks.filter(x=>x==="DIY").length;
   const verdict = diy>=3?"Volatile: many hand-made parts, expect surprises": saas>=6?"Noble: stable and inert, but pricey to keep": oss>=6?"Reactive: flexible, needs a skilled team to contain": "Balanced compound: a sensible mix";
   $("stability").textContent = `${oss} open source · ${saas} managed or licensed · ${diy} DIY${parts.some(p=>p.kind==="Custom")?" · custom parts":""}. ${verdict}.`;
   if(react){const f=$("formula");f.classList.remove("react");void f.offsetWidth;f.classList.add("react");}
@@ -1209,6 +1322,7 @@ function showDetail(btn){
   $("ptDetail").style.setProperty("--g",GROUP_HUE[k]);
   $("ptDetail").innerHTML=`<div class="big"><span class="z">${z}</span>${t[4]?iconHTML(k,t,"ti big-ic"):""}<span class="sym">${esc(t[0])}</span></div>
     <div style="min-width:0"><h3>${esc(t[1])}</h3><p class="meta">${esc(LAYER_NAMES[k])} · ${esc(t[2])} · runs on ${esc(t[5]==="any"?"any cloud or on-premise":t[5].split(" ").map(c=>CLOUD_LABEL[c]).join(", "))}</p><p>${esc(t[3])}.</p>
+    <p class="meta">Est. ${(()=>{const c=COST[t[1]];return k==="sources"?"not counted (already running)":c?`${usd(c[SI[state.fit.scale||"medium"]])}/month at ${state.fit.scale||"medium"} scale (${usd(c[0])} small · ${usd(c[2])} large)`:"no estimate";})()}</p>
     <p class="fitline ${lvl}">${lvl==="best"?"★ Best fit for your context":lvl==="good"?"Good fit for your context":lvl==="na"?"✕ Not available in your environment":"Possible, not the strongest fit"}</p>
     <ul class="fitwhy">${f.why.length?f.why.sort((a,b)=>Math.abs(b[0])-Math.abs(a[0])).map(([n,r])=>`<li class="${n>0?"up":"down"}">${n>0?"+":"−"} ${esc(r)}</li>`).join(""):"<li>No strong signal either way for your context.</li>"}</ul>
     <p class="meta">${state.vals[k]===t[1]?"In your stack now.":"Click the tile to put it in your stack."}</p></div>`;
@@ -1220,14 +1334,18 @@ function renderBestFits(R){
     return `<li style="--g:${GROUP_HUE[k]}"><span class="bf-l">${esc(LAYER_NAMES[k])}</span><button type="button" class="bf-t" data-bf="${k}" data-name="${esc(b.t[1])}">${iconHTML(k,b.t)}${esc(b.t[1])}</button><span class="bf-w">${esc(top)}</span></li>`;}).join("");
 }
 function flash(k){document.querySelectorAll(`#ptable .el[data-k="${k}"][aria-pressed="true"]`).forEach(b=>{b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");});}
-$("ptable").addEventListener("click",e=>{const b=e.target.closest(".el");if(!b)return;state.vals[b.dataset.k]=b.dataset.name;syncSelects();stackChanged();flash(b.dataset.k);showDetail(b);updateTable(true);});
+$("ptable").addEventListener("click",e=>{const b=e.target.closest(".el");if(!b)return;togglePick(b.dataset.k,b.dataset.name);syncSelects();stackChanged();flash(b.dataset.k);showDetail(b);updateTable(true);});
 $("ptable").addEventListener("mouseover",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
 $("ptable").addEventListener("focusin",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
-$("fitBar").addEventListener("change",e=>{const key=e.target.dataset.fit; if(key){state.fit[key]=e.target.value;} if(e.target.id==="fitHl") state.hl=e.target.checked; updateTable(); renderMini(); save();});
-$("bestFits").addEventListener("click",e=>{const b=e.target.closest("[data-bf]");if(!b)return;state.vals[b.dataset.bf]=b.dataset.name;syncSelects();stackChanged();flash(b.dataset.bf);updateTable(true);});
+$("multiPick").checked=!!state.multi;
+$("multiPick").addEventListener("change",e=>{state.multi=e.target.checked; if(!state.multi){state.extra={};} syncSelects();stackChanged();updateTable();save();});
+$("fitBar").addEventListener("change",e=>{const key=e.target.dataset.fit; if(key){state.fit[key]=e.target.value;} if(e.target.id==="fitHl") state.hl=e.target.checked; updateTable(); renderMini(); renderCost(); save();});
+$("costBox").addEventListener("change",e=>{ if(e.target.dataset.scale!==undefined){state.fit.scale=e.target.value;const f=$("fit-scale");if(f)f.value=state.fit.scale;updateTable();renderMini();}
+  if(e.target.id==="cost-rate"){const r=+e.target.value;if(r>0)state.rate=r;} renderCost(); save();});
+$("bestFits").addEventListener("click",e=>{const b=e.target.closest("[data-bf]");if(!b)return;togglePick(b.dataset.bf,b.dataset.name);syncSelects();stackChanged();flash(b.dataset.bf);updateTable(true);});
 const bestIn=(R,k)=>Object.values(R).find(x=>x.rank===1&&toolOf(k,x.t[1])===x.t);
-$("useBest").addEventListener("click",()=>{state.vals.cloud=bestIn(fitRanks(),"cloud").t[1];const R=fitRanks();LAYERS.forEach(k=>{if(k==="sources"||k==="cloud")return;state.vals[k]=bestIn(R,k).t[1];});syncSelects();stackChanged();LAYERS.forEach(flash);updateTable(true);});
-$("shuffle").addEventListener("click",()=>{LAYERS.forEach(k=>{const l=TOOLS[k];state.vals[k]=l[Math.floor(Math.random()*l.length)][1];});syncSelects();stackChanged();LAYERS.forEach(flash);updateTable(true);});
+$("useBest").addEventListener("click",()=>{state.vals.cloud=bestIn(fitRanks(),"cloud").t[1];const R=fitRanks();LAYERS.forEach(k=>{if(k==="sources"||k==="cloud")return;state.vals[k]=bestIn(R,k).t[1];if(state.extra)state.extra[k]=[];});syncSelects();stackChanged();LAYERS.forEach(flash);updateTable(true);});
+$("shuffle").addEventListener("click",()=>{state.extra={};LAYERS.forEach(k=>{const l=TOOLS[k];state.vals[k]=l[Math.floor(Math.random()*l.length)][1];});syncSelects();stackChanged();LAYERS.forEach(flash);updateTable(true);});
 
 /* ---------- diagram animation ---------- */
 const io = "IntersectionObserver" in window ? new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("play");io.unobserve(en.target);}}),{threshold:.35}) : null;
@@ -1323,12 +1441,14 @@ function stackScore(){
   const add=(fx,reason)=>{Object.entries(fx).forEach(([d,v])=>out[d]+=v); why.push({fx,reason});};
   const KIND={Licensed:{rel:2,cost:-4,future:-3},OSS:{cost:4,future:4,team:-2},SaaS:{rel:4,speed:3,cost:-4,future:-1},Cloud:{rel:3,speed:2,cost:-2},DIY:{rel:-5,cost:2,speed:-2,gov:-3,team:-2}};
   let saas=0;
-  LAYERS.forEach(k=>{const t=TOOLS[k].find(t=>t[1]===state.vals[k]); if(!t||k==="sources"||k==="cloud") return;
+  LAYERS.forEach(k=>picks(k).forEach(name=>{const t=toolOf(k,name); if(!t||k==="sources"||k==="cloud") return;
     const f=fitOf(k,t); if(!f.avail) add({rel:-5,cost:-2},`${t[1]} does not run on ${state.vals.cloud}`);
     if(t[6].includes("legacy")) add({future:-3},`${t[1]} is legacy technology`);
     if(KIND[t[2]]) add(KIND[t[2]],`${t[1]} is ${t[2]==="DIY"?"hand-made":t[2]==="OSS"?"open source":t[2]==="Licensed"?"licensed software":"managed"}`);
-    if(t[2]==="SaaS"||t[2]==="Cloud") saas++;});
-  const v=state.vals, has=(k,...n)=>n.includes(v[k]);
+    if(t[2]==="SaaS"||t[2]==="Cloud") saas++;}));
+  LAYERS.forEach(k=>{ if(k!=="sources"&&picks(k).length>=3) add({team:-4,cost:-2},`${picks(k).length} ${LAYER_NAMES[k].toLowerCase()} tools to run and keep in sync`);
+    else if(k!=="sources"&&k!=="cloud"&&picks(k).length===2) add({team:-1},`Two ${LAYER_NAMES[k].toLowerCase()} tools`); });
+  const v=state.vals, has=(k,...n)=>picks(k).some(x=>n.includes(x));
   if(has("gov","DataHub","OpenMetadata","Atlan","Unity Catalog","Collibra","Microsoft Purview","Dataplex","Glue Data Catalog","Amazon DataZone")) add({gov:8,adopt:2},`${v.gov} gives a catalogue with lineage`);
   if(has("gov","Great Expectations","Soda","Monte Carlo")) add({rel:6,gov:3},`${v.gov} tests the data itself`);
   if(has("gov","A shared README")) add({gov:-6},"Governance lives in a README");
@@ -1340,7 +1460,7 @@ function stackScore(){
   if(has("serve","Metabase","Power BI","Excel")) add({adopt:4},`${v.serve} is easy for non-analysts`);
   if(has("store","Microsoft Fabric")&&has("serve","Power BI")) add({speed:4,team:2},"Fabric and Power BI share one workspace");
   if(has("cloud","Microsoft Azure")&&has("gov","Microsoft Purview")) add({gov:3},"Purview already sees the Azure estate");
-  const avg=LAYERS.filter(k=>k!=="sources"&&k!=="cloud").map(k=>toolOf(k,v[k])).filter(Boolean).reduce((a,t,i,arr)=>a+fitOf(LAYERS.find(k=>toolOf(k,t[1])),t).sc/arr.length,0);
+  const avg=LAYERS.filter(k=>k!=="sources"&&k!=="cloud").flatMap(k=>picks(k).map(n=>toolOf(k,n))).filter(Boolean).reduce((a,t,i,arr)=>a+fitOf(LAYERS.find(k=>toolOf(k,t[1])),t).sc/arr.length,0);
   if(avg>=2) add({team:4,speed:2},"Most choices fit your team and budget"); else if(avg<0) add({team:-4,cost:-2},"Many choices clash with your team or budget");
   if(has("ingest","Apache Kafka","Debezium")&&has("transform","Apache Flink")) add({speed:6},"Streaming end to end");
   if(has("ingest","Apache Kafka","Debezium")&&has("transform","Plain SQL views","dbt")&&has("orch","cron")) add({rel:-3},"Streaming ingest feeding batch-only tools");
@@ -1351,6 +1471,10 @@ function stackScore(){
   if(has("store","Apache Iceberg","Delta Lake")) add({future:5},"Open table format avoids lock-in");
   if(has("ml","LLM via Claude API")) add({future:4,cost:-2},"Language models over your data");
   if(has("ml","Notebooks")) add({future:-2,rel:-2},"Models stay in notebooks");
+  { const t=stackCost().total, cap=BUDGET_CAP[state.fit.budget][SI[state.fit.scale||"medium"]];
+    if(t>cap*1.5) add({cost:-10},`About ${usd(t)}/month, far above a ${state.fit.budget} budget`);
+    else if(t>cap) add({cost:-5},`About ${usd(t)}/month, above a ${state.fit.budget} budget`);
+    else if(t<cap*.5) add({cost:5},`About ${usd(t)}/month, well within budget`); }
   if(saas>=5) add({cost:-6,future:-4},`${saas} managed tools: high bills and lock-in`);
   const custom=LAYERS.filter(k=>k!=="sources"&&k!=="cloud"&&v[k]&&!known(k,v[k]));
   if(custom.length) why.push({fx:{},reason:`Custom tools (${custom.map(k=>v[k]).join(", ")}) are scored as neutral`});
@@ -1391,7 +1515,7 @@ function go(i,focus){
   if(focus) $("stage").scrollIntoView({block:"start",behavior:"smooth"});
 }
 function renderCover(){
-  $("coverStack").innerHTML = LAYERS.map(k=>state.vals[k]?`<span title="${esc(LAYER_NAMES[k])}">${iconFor(k,state.vals[k])}${esc(state.vals[k])}</span>`:"").join("");
+  $("coverStack").innerHTML = LAYERS.flatMap(k=>picks(k).map(n=>`<span title="${esc(LAYER_NAMES[k])}">${iconFor(k,n)}${esc(n)}</span>`)).join("");
   $("coverArt").innerHTML = draw({k:"pyr",items:["Learn","Analyse","Clean","Store","Collect"]});
   animateDiagrams($("coverArt"));
 }
@@ -1449,6 +1573,7 @@ function renderScore(){
         <button type="button" class="chip" data-go="1">Change my elements</button></div>
       <div class="box"><h3>From your decisions</h3><ul class="why">${SCENES.map((sc,i)=>{const a=state.answers[i];return `<li><button type="button" class="linkish" data-go="${i+2}">${fill(sc.title,false)}</button><span class="tag ${a!=null?sc.opts[a].g:""}">${a!=null?GRADE_LABEL[sc.opts[a].g]:"Skipped"}</span></li>`;}).join("")}</ul>
         <button type="button" class="chip" id="replay">Replay the story</button></div>
+      <div class="box costbox compact">${costHTML(true)}</div>
       <div class="box"><h3>Read next</h3><p class="hint">Your weakest dimensions are <b>${esc(DIMS[weak[0]])}</b> and <b>${esc(DIMS[weak[1]])}</b>; strongest is ${esc(DIMS[strong])}.</p>
         <div class="readnext">${[...new Set([...READ_NEXT[weak[0]],...READ_NEXT[weak[1]]])].map(n=>`<a href="#m${n}" data-open="${n}" class="rn"><span class="n">${String(n).padStart(2,"0")}</span>${esc(M[n-1].name)}<small>${esc(M[n-1].q)}</small></a>`).join("")}</div></div>
     </div>
@@ -1487,11 +1612,14 @@ document.addEventListener("keydown",e=>{
 renderTable();
 renderPresets(); renderFields(); renderFlow(); renderFilters(); renderModels(); renderMatches(); renderOwnFields(); renderOwn(); refreshAnalogies(); go(state.scene||0); renderMini();
 
-$("presets").addEventListener("click",e=>{const p=e.target.dataset.p;if(!p)return;state.preset=p;state.vals={...PRESETS[p]};renderPresets();renderFields();refreshAnalogies();updateTable(true);save();});
+$("presets").addEventListener("click",e=>{const p=e.target.dataset.p;if(!p)return;state.preset=p;state.vals={...PRESETS[p]};state.extra=JSON.parse(JSON.stringify(PRESETS[p].extra||{}));delete state.vals.extra;renderPresets();renderFields();refreshAnalogies();updateTable(true);save();});
 function stackChanged(){state.preset=null;renderPresets();refreshAnalogies();updateTable();save();}
 $("fields").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;state.vals[k]=e.target.value;stackChanged();});
-$("fields").addEventListener("change",e=>{const k=e.target.dataset.sel;if(!k)return;const inp=$("c-"+k);
-  if(e.target.value==="__other"){inp.hidden=false;inp.value="";state.vals[k]="";inp.focus();}else{inp.hidden=true;state.vals[k]=e.target.value;}
+$("fields").addEventListener("click",e=>{const b=e.target.closest("[data-rmk]");if(!b)return;const k=b.dataset.rmk;state.extra[k]=(state.extra[k]||[]).filter(n=>n!==b.dataset.rmn);syncSelects();stackChanged();updateTable();});
+$("fields").addEventListener("change",e=>{const ak=e.target.dataset.addk;if(ak){if(e.target.value){state.extra=state.extra||{};state.extra[ak]=[...(state.extra[ak]||[]),e.target.value];syncSelects();stackChanged();flash(ak);updateTable(true);}return;}
+  const k=e.target.dataset.sel;if(!k)return;const inp=$("c-"+k);
+  if(e.target.value==="__other"){inp.hidden=false;inp.value="";state.vals[k]="";inp.focus();}else{inp.hidden=true;state.vals[k]=e.target.value;if(state.extra&&state.extra[k])state.extra[k]=state.extra[k].filter(n=>n!==e.target.value);}
+  $("x-"+k).innerHTML=extraChips(k);
   $("li-"+k).innerHTML=iconFor(k,state.vals[k]);stackChanged();flash(k);});
 $("problem").addEventListener("input",e=>{state.problem=e.target.value;renderMatches();save();});
 $("samples").addEventListener("click",e=>{const s=e.target.dataset.sample;if(!s)return;$("problem").value=s;state.problem=s;renderMatches();save();});
