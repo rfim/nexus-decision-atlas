@@ -313,6 +313,16 @@ mark .ti{margin-right:.25em}
 .xadd{font:12px var(--font-body)!important;padding:3px 8px!important;border-radius:999px!important;width:auto!important;color:var(--muted)!important}
 
 /* Cost */
+.cost-toggle{width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;padding:0;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.cost-toggle .cost-head{display:block}
+.cost-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px}
+.cost-row .cost-verdict{margin:0;font-size:12px;border-radius:999px;padding:2px 10px;background:color-mix(in srgb,currentColor 12%,transparent)}
+.cost-chev{font:600 13px var(--font-mono);color:var(--teal);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--panel)}
+.cost-toggle:hover .cost-chev{border-color:var(--teal)}
+#costBody{margin-top:10px}
+.cost-note{font:600 13px var(--font-mono);margin:4px 0 10px}
+.cost-note.over{color:#c4473a}.cost-note.ok{color:#3f9a5a}
+.cost-ctl{margin-bottom:10px}
 .costbox{margin-top:14px;border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--bg)}
 .costbox.compact{background:var(--panel)}
 .cost-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-end}
@@ -624,18 +634,21 @@ function stackCost(){
 const BUDGET_CAP = {lean:[300,1500,6000],moderate:[1500,6000,25000],enterprise:[6000,25000,100000]};
 function costHTML(compact){
   const {items,total}=stackCost(), sc=state.fit.scale||"medium", cap=BUDGET_CAP[state.fit.budget][SI[sc]];
-  const over = total>cap;
+  const over = total>cap, open = compact || !!state.costOpen;
   const bars = items.filter(x=>x.c>0).map(x=>`<span style="--g:${GROUP_HUE[x.k]};flex:${x.c}" title="${esc(x.name)}: ${usd(x.c)}"></span>`).join("");
-  return `<div class="cost-head">
-      <div><div class="eyebrow">Monthly estimate</div><div class="cost-total">${usd(total)}<small>/month</small></div>
-        <div class="cost-sub">≈ ${idr(total)} per month · ${usd(total*12)} per year</div></div>
-      ${compact?"":`<div class="cost-ctl"><label>Scale <select id="cost-scale" data-scale>${SCALES.map(([v,l])=>`<option value="${v}"${sc===v?" selected":""}>${esc(l)}</option>`).join("")}</select></label>
+  const head = `<div class="eyebrow">Monthly estimate · ${esc(sc)} scale</div>
+      <div class="cost-row"><span class="cost-total">${usd(total)}<small>/month</small></span>
+        <span class="cost-verdict ${over?"over":"ok"}">${over?"Above":"Within"} a ${esc(state.fit.budget)} budget</span></div>
+      <div class="cost-sub">≈ ${idr(total)} per month · ${usd(total*12)} per year</div>`;
+  const body = `<div class="cost-bar" aria-hidden="true">${bars||"<span style='flex:1;--g:var(--line)'></span>"}</div>
+    <p class="cost-note ${over?"over":"ok"}">${over?`Above a ${state.fit.budget} budget at this scale (about ${usd(cap)}/month).`:`Within a ${state.fit.budget} budget at this scale (up to about ${usd(cap)}/month).`}</p>
+    ${compact?"":`<div class="cost-ctl"><label>Scale <select id="cost-scale" data-scale>${SCALES.map(([v,l])=>`<option value="${v}"${sc===v?" selected":""}>${esc(l)}</option>`).join("")}</select></label>
         <label>1 USD = Rp <input id="cost-rate" type="number" min="1000" step="100" value="${state.rate||16500}"></label></div>`}
-    </div>
-    <div class="cost-bar" aria-hidden="true">${bars||"<span style='flex:1;--g:var(--line)'></span>"}</div>
-    <p class="cost-verdict ${over?"over":"ok"}">${over?`Above a ${state.fit.budget} budget at this scale (about ${usd(cap)}/month).`:`Within a ${state.fit.budget} budget at this scale (up to about ${usd(cap)}/month).`}</p>
     <ul class="cost-list">${items.map(x=>`<li><span class="cl-n">${iconFor(x.k,x.name)}${esc(x.name)}<em>${esc(LAYER_NAMES[x.k])}${x.note?" · "+esc(x.note):""}</em></span><span class="cl-v">${x.c==null?"–":x.c===0?"$0":usd(x.c)}</span></li>`).join("")}</ul>
     <p class="hint small">Ballpark from public list prices: licences, usage and the servers each tool needs, without salaries or data transfer. Open-source tools are priced as self-hosted infrastructure. Check vendor calculators before you budget.</p>`;
+  if(compact) return head+body;
+  return `<button type="button" class="cost-toggle" id="costToggle" aria-expanded="${open}" aria-controls="costBody"><span class="cost-head">${head}</span><span class="cost-chev">${open?"Hide breakdown ▴":"Show breakdown ▾"}</span></button>
+    <div id="costBody"${open?"":" hidden"}>${body}</div>`;
 }
 function renderCost(){ if($("costBox")) $("costBox").innerHTML=costHTML(false); const t=stackCost().total; if($("miniCost")) $("miniCost").textContent=usd(t); }
 
@@ -952,7 +965,7 @@ const M = [
 const KEY = "nexus-atlas-v3";
 let state = {multi:true, extra:JSON.parse(JSON.stringify(PRESETS["Open lakehouse"].extra||{})), fit:{team:"mid",budget:"moderate",scale:"medium",latency:"daily",skill:"sql"}, hl:true, rate:16500, preset:"Open lakehouse", vals:(({extra,...r})=>r)(PRESETS["Open lakehouse"]), problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
 try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, fit:{...state.fit,...(s.fit||{})}, sec:null, layer:null, search:""}; } catch(e){}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({multi:state.multi, extra:state.extra, fit:state.fit, hl:state.hl, rate:state.rate, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({costOpen:state.costOpen, multi:state.multi, extra:state.extra, fit:state.fit, hl:state.hl, rate:state.rate, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (tpl, hl=true) => esc(tpl).replace(/\{(\w+)\}/g, (_, k) => {
@@ -1340,6 +1353,7 @@ $("ptable").addEventListener("focusin",e=>{const b=e.target.closest(".el");if(b)
 $("multiPick").checked=!!state.multi;
 $("multiPick").addEventListener("change",e=>{state.multi=e.target.checked; if(!state.multi){state.extra={};} syncSelects();stackChanged();updateTable();save();});
 $("fitBar").addEventListener("change",e=>{const key=e.target.dataset.fit; if(key){state.fit[key]=e.target.value;} if(e.target.id==="fitHl") state.hl=e.target.checked; updateTable(); renderMini(); renderCost(); save();});
+$("costBox").addEventListener("click",e=>{if(e.target.closest("#costToggle")){state.costOpen=!state.costOpen;renderCost();save();}});
 $("costBox").addEventListener("change",e=>{ if(e.target.dataset.scale!==undefined){state.fit.scale=e.target.value;const f=$("fit-scale");if(f)f.value=state.fit.scale;updateTable();renderMini();}
   if(e.target.id==="cost-rate"){const r=+e.target.value;if(r>0)state.rate=r;} renderCost(); save();});
 $("bestFits").addEventListener("click",e=>{const b=e.target.closest("[data-bf]");if(!b)return;togglePick(b.dataset.bf,b.dataset.name);syncSelects();stackChanged();flash(b.dataset.bf);updateTable(true);});
