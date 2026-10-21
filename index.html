@@ -157,6 +157,8 @@ header.hero{padding-block:48px 28px}
 .stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:26px;scroll-margin-top:12px}
 @media (max-width:600px){.stage{padding:14px}}
 .stage .ptable-box,.stage .stack{border:0;padding:0;background:transparent;margin-bottom:18px}
+.stage .stack{padding-bottom:18px;border-bottom:1px dashed var(--line);margin-bottom:20px}
+.pt-foot{margin-bottom:6px}
 .stage-nav{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
 .navbtn{font:600 14px var(--font-body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer}
 .navbtn:disabled{opacity:.35;cursor:default}
@@ -390,32 +392,31 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
       </div>
     </div>
     <div class="scene" id="sc-stack" hidden>
+  <section class="stack" aria-labelledby="stack-h">
+    <div class="stack-head">
+      <div><div class="eyebrow">Step 1 · Your stack</div><h2 id="stack-h" style="margin-top:6px">Start from a preset or pick each layer</h2></div>
+      <div class="headbtns"><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
+    </div>
+    <p class="hint" style="color:var(--muted);font-size:14px;margin:6px 0 0">Pre-filled with example tools. Replace them with yours; your choices stay in this browser.</p>
+    <div class="presets" id="presets" role="group" aria-label="Example stacks"></div>
+    <div class="pipeline" id="fields"></div>
+    <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
+  </section>
   <section class="box ptable-box" aria-labelledby="pt-h">
     <div class="stack-head">
-      <div><div class="eyebrow">Step 1 · Choose your elements</div><h2 id="pt-h" style="margin-top:6px">The Periodic Table of Data Engineering</h2></div>
-      <div class="headbtns"><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
+      <div><div class="eyebrow">Or browse every element</div><h2 id="pt-h" style="margin-top:6px">The Periodic Table of Data Engineering</h2></div>
     </div>
     <p class="hint">Nine groups: your cloud, then one per pipeline layer. Set your context and the table marks the best fit in each group (★) and the ones that cannot run in your environment (✕). Hover an element to see why; click it to put it in your stack.</p>
     <div class="fitbar" id="fitBar" aria-label="Your context"></div>
     <div class="pt-scroll"><div class="ptable" id="ptable"></div></div>
-    <div class="bestfit-box">
-      <div class="stack-head"><h3>Best fit per layer for your context</h3><button type="button" class="chip" id="useBest">Use all best fits</button></div>
-      <ul class="bestfits" id="bestFits"></ul>
-    </div>
     <div class="pt-foot">
       <div class="pt-detail" id="ptDetail"><p class="hint" style="margin:0">Hover or focus an element to read it.</p></div>
       <div class="compound"><div class="eyebrow">Your compound</div><div class="formula" id="formula"></div><p class="hint" id="stability" style="margin:6px 0 0"></p></div>
     </div>
-  </section>
-
-  <section class="stack" aria-labelledby="stack-h">
-    <div class="stack-head">
-      <h2 id="stack-h">Your stack</h2>
-      <p>Pre-filled with example tools. Replace them with yours; changes stay in this browser.</p>
+    <div class="bestfit-box">
+      <div class="stack-head"><h3>Best fit per layer for your context</h3><button type="button" class="chip" id="useBest">Use all best fits</button></div>
+      <ul class="bestfits" id="bestFits"></ul>
     </div>
-    <div class="presets" id="presets" role="group" aria-label="Example stacks"></div>
-    <div class="pipeline" id="fields"></div>
-    <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
   </section>
 
     </div>
