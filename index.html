@@ -77,6 +77,189 @@ header.hero{padding-block:48px 28px}
 .flowline b{font-weight:600;color:var(--ink);background:var(--teal-soft);border-radius:5px;padding:2px 7px}
 .flowline i{font-style:normal;color:var(--accent)}
 
+.field select{font:14px var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%;min-width:0}
+.field select:focus{border-color:var(--teal);outline:none;box-shadow:0 0 0 3px var(--teal-soft)}
+.field select + input{margin-top:6px}
+
+/* Periodic table */
+.ptable-box{margin-bottom:22px}
+.ptable-box .hint{color:var(--muted);font-size:14px;margin:6px 0 12px}
+.pt-scroll{overflow-x:auto;padding-bottom:6px}
+.ptable{display:grid;grid-template-columns:repeat(8,minmax(96px,1fr));gap:6px;min-width:820px}
+.pt-col{display:flex;flex-direction:column;gap:6px}
+.pt-gh{font:600 11px var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--g);border-bottom:2px solid var(--g);padding-bottom:4px;display:flex;gap:6px}
+.pt-gh span{color:var(--muted)}
+.el{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;height:76px;max-width:100%;padding:6px 7px;border-radius:6px;cursor:pointer;
+  border:1px solid color-mix(in srgb,var(--g) 45%,var(--line));background:color-mix(in srgb,var(--g) 14%,var(--panel));color:var(--ink);font-family:var(--font-body)}
+.el .z{font:10px var(--font-mono);color:var(--muted)}
+.el .kind{position:absolute;top:6px;right:7px;font:9px var(--font-mono);color:var(--muted)}
+.el .sym{font:800 22px/1 var(--font-display);margin-top:auto;color:var(--g)}
+.el .nm{font-size:10.5px;line-height:1.2;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.el:hover{border-color:var(--g);transform:translateY(-2px)}
+.el[aria-pressed="true"]{background:var(--g);border-color:var(--g);color:#fff}
+.el[aria-pressed="true"] .sym,.el[aria-pressed="true"] .z,.el[aria-pressed="true"] .kind{color:#fff}
+.pt-foot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:14px}
+@media (max-width:760px){.pt-foot{grid-template-columns:1fr}}
+.pt-detail{display:flex;gap:14px;align-items:flex-start;min-height:96px;min-width:0}
+.pt-detail .big{flex:none;width:84px;height:84px;border-radius:8px;background:var(--g);color:#fff;display:flex;flex-direction:column;padding:6px 8px}
+.pt-detail .big .z{font:11px var(--font-mono)}
+.pt-detail .big .sym{font:800 38px/1 var(--font-display);margin-top:auto}
+.pt-detail h3{font-size:18px}
+.pt-detail p{margin:2px 0;font-size:14px}
+.pt-detail .meta{font:12px var(--font-mono);color:var(--muted)}
+.formula{display:flex;flex-wrap:wrap;align-items:center;gap:4px;margin-top:6px;font:800 26px/1.2 var(--font-display)}
+.formula span{color:var(--g)}
+.formula i{font-style:normal;color:var(--muted);font-weight:400}
+
+/* Animation: everything is visible at rest; motion only adds to it */
+.runner{fill:var(--accent);stroke:var(--panel);stroke-width:1.5}
+.card svg{cursor:pointer}
+@media (prefers-reduced-motion:no-preference){
+  svg.play .draw{stroke-dasharray:1;animation:draw 1.3s cubic-bezier(.6,.05,.3,1) backwards;animation-delay:var(--d)}
+  svg.play .pop{transform-box:fill-box;transform-origin:center;animation:pop .55s cubic-bezier(.3,1.5,.5,1) backwards;animation-delay:var(--d)}
+  svg.play text.pop{animation-name:rise}
+  svg.still *{animation:none!important}
+  svg .march{animation:march 1.4s linear infinite}
+  svg.play .pulse{transform-box:fill-box;transform-origin:center;animation:pop .55s cubic-bezier(.3,1.5,.5,1) backwards var(--d),pulse 2.4s ease-in-out 1.2s infinite}
+  svg:not(.play) .runner{opacity:0}
+  svg.play .runner{animation:fadein .4s 1.4s backwards}
+  .el{transition:transform .15s,background-color .25s}
+  .el{animation:rise .5s cubic-bezier(.3,1.3,.5,1) backwards;animation-delay:var(--d)}
+  .el.pop{animation:bump .6s cubic-bezier(.3,1.8,.5,1)}
+  .el[aria-pressed="true"]{box-shadow:0 0 0 0 var(--g);animation:glow 2.2s ease-out infinite}
+  .el[aria-pressed="true"].pop{animation:bump .6s cubic-bezier(.3,1.8,.5,1),glow 2.2s ease-out .6s infinite}
+  .formula.react span{animation:react .7s cubic-bezier(.3,1.6,.5,1) backwards}
+  .formula.react span:nth-of-type(2){animation-delay:.05s}.formula.react span:nth-of-type(3){animation-delay:.1s}.formula.react span:nth-of-type(4){animation-delay:.15s}
+  .formula.react span:nth-of-type(5){animation-delay:.2s}.formula.react span:nth-of-type(6){animation-delay:.25s}.formula.react span:nth-of-type(7){animation-delay:.3s}.formula.react span:nth-of-type(8){animation-delay:.35s}
+  .card:hover{transform:translateY(-2px)}
+  .card{transition:transform .2s,border-color .15s}
+}
+@media (prefers-reduced-motion:reduce){.runner{display:none}}
+@keyframes draw{from{stroke-dashoffset:1}}
+@keyframes pop{from{opacity:0;transform:scale(.4)}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}}
+@keyframes fadein{from{opacity:0}}
+@keyframes march{to{stroke-dashoffset:-14}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+@keyframes bump{0%{transform:scale(1)}40%{transform:scale(1.15) rotate(-3deg)}100%{transform:scale(1)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--g) 60%,transparent)}100%{box-shadow:0 0 0 10px transparent}}
+@keyframes react{0%{opacity:0;transform:translateY(-14px) scale(1.4)}100%{opacity:1}}
+
+
+/* Storyboard */
+.strip{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;scrollbar-width:thin}
+.frame{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:118px;text-align:left;padding:7px 9px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;font-family:var(--font-body)}
+.frame .fn{font:600 11px var(--font-mono);color:var(--muted)}
+.frame .ft{font-size:12px;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.frame[aria-current="step"]{border-color:var(--ink);box-shadow:inset 0 -3px 0 var(--accent)}
+.frame.best .fn::after,.frame.ok .fn::after,.frame.poor .fn::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:6px;vertical-align:1px}
+.frame.best .fn::after{background:#3f9a5a}.frame.ok .fn::after{background:var(--accent)}.frame.poor .fn::after{background:#c4473a}
+.stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:26px;scroll-margin-top:12px}
+@media (max-width:600px){.stage{padding:14px}}
+.stage .ptable-box,.stage .stack{border:0;padding:0;background:transparent;margin-bottom:18px}
+.stage-nav{display:flex;align-items:center;gap:12px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line)}
+.navbtn{font:600 14px var(--font-body);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:9px 16px;cursor:pointer}
+.navbtn:disabled{opacity:.35;cursor:default}
+.navbtn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.progress{flex:1;height:4px;border-radius:2px;background:var(--line);overflow:hidden}
+.progress span{display:block;height:100%;background:var(--accent);transition:width .4s}
+.cover{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:28px;align-items:center}
+@media (max-width:760px){.cover{grid-template-columns:1fr}}
+.cover h2{font-size:clamp(26px,3.6vw,38px);margin-top:8px}
+.cover p{color:var(--muted);max-width:60ch}
+.steps{padding-left:20px;margin:12px 0 18px}.steps li{margin-bottom:8px}
+.cta{font:700 16px var(--font-body);background:var(--accent);color:#1c1406;border:0;border-radius:10px;padding:12px 22px;cursor:pointer}
+.cta:hover{filter:brightness(1.05)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:26px}
+@media (max-width:820px){.panel{grid-template-columns:1fr}}
+.art{display:flex;flex-direction:column;gap:10px;min-width:0}
+.art-tabs{display:flex;flex-wrap:wrap;gap:6px}
+.art-tabs .chip{font-size:12px;padding:4px 10px}
+.art-tabs .chip[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.art-box svg{width:100%;height:auto;background:var(--bg);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.art-cap{display:flex;flex-direction:column;gap:4px;margin-top:10px;font-size:14px}
+.art-cap span{color:var(--muted)}
+.art-cap a{font:600 12px var(--font-mono)}
+.narr h2{font-size:clamp(24px,3vw,32px);margin-top:8px}
+.story{font-size:16px;margin:12px 0}
+.ask{font:700 17px var(--font-display);margin:16px 0 10px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{display:flex;gap:12px;align-items:flex-start;text-align:left;font:15px/1.45 var(--font-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 14px;cursor:pointer}
+.choice:hover{border-color:var(--teal);transform:translateX(3px)}
+.choice .key{flex:none;font:700 12px var(--font-mono);width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:var(--teal-soft);color:var(--teal)}
+.choice[aria-checked="true"]{border-width:2px;padding:10px 13px}
+.choice.best{border-color:#3f9a5a}.choice.ok{border-color:var(--accent)}.choice.poor{border-color:#c4473a}
+.choice.best .key{background:#3f9a5a;color:#fff}.choice.ok .key{background:var(--accent);color:#1c1406}.choice.poor .key{background:#c4473a;color:#fff}
+.feedback{display:none;margin-top:14px;border-radius:10px;padding:12px 14px;background:var(--teal-soft)}
+.feedback.show{display:block}
+.feedback.poor{background:color-mix(in srgb,#c4473a 14%,var(--panel))}.feedback.ok{background:var(--accent-soft)}
+.feedback .verdict{font:700 13px var(--font-mono);letter-spacing:.06em;text-transform:uppercase}
+.feedback.best .verdict{color:#3f9a5a}.feedback.ok .verdict{color:var(--accent)}.feedback.poor .verdict{color:#c4473a}
+.feedback p{margin:4px 0 8px}
+.fx{display:flex;flex-wrap:wrap;gap:6px}
+.fx span,.fxs em{font:600 12px var(--font-mono);font-style:normal;border-radius:999px;padding:2px 9px}
+.up{background:color-mix(in srgb,#3f9a5a 20%,var(--panel));color:var(--ink)}
+.down{background:color-mix(in srgb,#c4473a 20%,var(--panel));color:var(--ink)}
+.headbtns{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mini{font:600 13px var(--font-mono);border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+.mini b{color:var(--accent);font-size:15px}.mini i{font-style:normal;color:var(--muted);margin-left:2px}
+/* Score */
+.score-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:center}
+@media (max-width:760px){.score-top{grid-template-columns:1fr}}
+.dial{display:flex;gap:18px;align-items:center}
+.grade{flex:none;width:96px;height:96px;border-radius:18px;display:grid;place-items:center;font:800 60px/1 var(--font-display);color:#fff;background:var(--teal)}
+.grade.gA{background:#3f9a5a}.grade.gB{background:var(--teal)}.grade.gC{background:var(--accent)}.grade.gD,.grade.gE{background:#c4473a}
+.big-num{font:800 48px/1 var(--font-display);font-variant-numeric:tabular-nums}.big-num small{font-size:18px;color:var(--muted);margin-left:4px}
+.gt{font:700 16px var(--font-display);margin-top:4px}
+.radar svg{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+.bars{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+.bar{display:grid;grid-template-columns:150px minmax(0,1fr) 36px;gap:10px;align-items:center;font-size:14px}
+@media (max-width:480px){.bar{grid-template-columns:110px minmax(0,1fr) 30px;font-size:12px}}
+.track{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.fillb{display:block;height:100%;width:var(--w);border-radius:5px;background:var(--teal)}
+.fillb.good{background:#3f9a5a}.fillb.bad{background:#c4473a}
+.bv{font:600 13px var(--font-mono);text-align:right;font-variant-numeric:tabular-nums}
+.score-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.score-cols h3{font-size:17px;margin-bottom:8px}
+.why{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.why li{display:flex;justify-content:space-between;gap:8px;align-items:baseline;flex-wrap:wrap;border-bottom:1px dashed var(--line);padding-bottom:5px}
+.fxs{display:flex;gap:4px;flex-wrap:wrap}
+.linkish{background:none;border:0;padding:0;color:var(--teal);font:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.tag{font:600 11px var(--font-mono);border-radius:4px;padding:1px 7px;background:var(--line)}
+.tag.best{background:#3f9a5a;color:#fff}.tag.ok{background:var(--accent);color:#1c1406}.tag.poor{background:#c4473a;color:#fff}
+.readnext{display:flex;flex-direction:column;gap:6px}
+.rn{display:block;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-weight:600;font-size:14px}
+.rn:hover{border-color:var(--accent)}
+.rn .n{font:600 12px var(--font-mono);color:var(--accent);margin-right:8px}
+.rn small{display:block;font-weight:400;color:var(--muted)}
+.hint.small{font-size:12.5px;color:var(--muted);margin-top:14px}
+/* Library */
+.library-wrap{margin-bottom:10px}
+.libtoggle{width:100%;display:flex;justify-content:space-between;align-items:center;gap:12px;text-align:left;font:15px var(--font-body);color:var(--ink);background:var(--panel);border:1px dashed var(--teal);border-radius:12px;padding:16px 18px;cursor:pointer}
+.libtoggle .arrow{font-size:20px;transition:transform .25s}
+.libtoggle[aria-expanded="true"] .arrow{transform:rotate(180deg)}
+#library{margin-top:18px}
+.card.hl{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+@media (prefers-reduced-motion:no-preference){
+  .scene.enter{animation:scenein .55s cubic-bezier(.2,.9,.3,1)}
+  .scene.enter .choice{animation:rise .45s cubic-bezier(.3,1.3,.5,1) backwards;animation-delay:calc(var(--d) + .25s)}
+  .scene.enter .narr h2,.scene.enter .story{animation:rise .5s backwards .1s}
+  .scene.enter .steps li{animation:rise .5s backwards}
+  .scene.enter .steps li:nth-child(2){animation-delay:.12s}.scene.enter .steps li:nth-child(3){animation-delay:.24s}
+  .feedback.pop{animation:pop .45s cubic-bezier(.3,1.5,.5,1)}
+  .feedback.pop .fx span{animation:rise .4s backwards}
+  .feedback.pop .fx span:nth-child(2){animation-delay:.08s}.feedback.pop .fx span:nth-child(3){animation-delay:.16s}.feedback.pop .fx span:nth-child(4){animation-delay:.24s}
+  .choice{transition:transform .15s,border-color .15s}
+  #sc-score .fillb{transition:width 1s cubic-bezier(.2,.9,.3,1);transition-delay:var(--d)}
+  #sc-score:not(.grow) .fillb{width:0}
+  .grade{animation:stamp .6s cubic-bezier(.3,1.8,.5,1) .9s backwards}
+  .cta{animation:nudge 2.4s ease-in-out 1.5s infinite}
+  .frame{transition:transform .15s}.frame:hover{transform:translateY(-2px)}
+}
+@keyframes scenein{from{opacity:0;transform:translateX(24px)}}
+@keyframes stamp{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}100%{opacity:1}}
+@keyframes nudge{0%,100%{transform:translateX(0)}50%{transform:translateX(4px)}}
+
 /* Finder */
 .finder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-bottom:22px}
 @media (max-width:820px){.finder{grid-template-columns:1fr}}
@@ -138,7 +321,6 @@ svg text.b{font-weight:600}
 .yours ol{margin:10px 0 0;padding-left:20px}
 .yours li{margin-bottom:6px}
 footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
-@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
 </style>
 </head>
 <body>
@@ -146,9 +328,41 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
   <header class="hero">
     <div class="eyebrow">Decision models × data platform</div>
     <h1>Nexus Decision <em>Atlas</em></h1>
-    <p>The fifty models from <i>The Decision Book</i> by Mikael Krogerus and Roman Tschäppeler, redrawn and summarised, with each one translated into a decision you will face while building a data platform. Type your own stack below and every analogy rewrites itself around your tools.</p>
-    <div class="legend" id="legend"></div>
+    <p>Build your stack from the periodic table, live through eight scenes in the life of a data platform, make one call in each, and get a score for your architecture. Every scene teaches a few of the fifty models from <i>The Decision Book</i> (Krogerus &amp; Tschäppeler).</p>
   </header>
+
+  <nav class="strip" id="strip" aria-label="Storyboard scenes"></nav>
+
+  <section class="stage" id="stage" aria-live="polite">
+    <div class="scene" id="sc-cover">
+      <div class="cover">
+        <div class="cover-art" id="coverArt"></div>
+        <div class="cover-text">
+          <div class="eyebrow">The story so far</div>
+          <h2>You have been asked to build <span class="pname"></span>.</h2>
+          <p>The company wants <mark class="pgoal"></mark>. You have a team, a budget and a hundred opinions. The storyboard takes about five minutes:</p>
+          <ol class="steps">
+            <li><b>Choose your elements.</b> Pick one tool per layer from the periodic table.</li>
+            <li><b>Live eight scenes.</b> Each one is a real moment in a platform's life. Make one call; see which models explain it.</li>
+            <li><b>Get your score.</b> Seven dimensions, a grade, and the models to read next.</li>
+          </ol>
+          <button type="button" class="cta" data-go="1">Start the story →</button>
+        </div>
+      </div>
+    </div>
+    <div class="scene" id="sc-stack" hidden>
+  <section class="box ptable-box" aria-labelledby="pt-h">
+    <div class="stack-head">
+      <div><div class="eyebrow">Step 1 · Choose your elements</div><h2 id="pt-h" style="margin-top:6px">The Periodic Table of Data Engineering</h2></div>
+      <div class="headbtns"><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
+    </div>
+    <p class="hint">Eight groups, one per pipeline layer. Click an element to put it in your stack; the dropdowns and every analogy follow.</p>
+    <div class="pt-scroll"><div class="ptable" id="ptable"></div></div>
+    <div class="pt-foot">
+      <div class="pt-detail" id="ptDetail"><p class="hint" style="margin:0">Hover or focus an element to read it.</p></div>
+      <div class="compound"><div class="eyebrow">Your compound</div><div class="formula" id="formula"></div><p class="hint" id="stability" style="margin:6px 0 0"></p></div>
+    </div>
+  </section>
 
   <section class="stack" aria-labelledby="stack-h">
     <div class="stack-head">
@@ -160,6 +374,21 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
     <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
   </section>
 
+    </div>
+    <div class="scene" id="sc-story" hidden></div>
+    <div class="scene" id="sc-score" hidden></div>
+    <div class="stage-nav">
+      <button type="button" class="navbtn" id="prev">← Back</button>
+      <div class="progress" aria-hidden="true"><span id="progBar"></span></div>
+      <button type="button" class="navbtn primary" id="next">Next →</button>
+    </div>
+  </section>
+
+  <section class="library-wrap">
+    <button type="button" class="libtoggle" id="libToggle" aria-expanded="false" aria-controls="library">
+      <span><b>The model library</b> · all 50 models with diagrams, summaries and analogies for your stack</span><span class="arrow">↓</span>
+    </button>
+    <div id="library" hidden>
   <section class="finder">
     <div class="box">
       <h2>Which model fits my problem?</h2>
@@ -181,7 +410,6 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
   </section>
 
   <main id="models"></main>
-
   <section class="yours">
     <div class="box">
       <div class="eyebrow">Model 51 · World's next top model</div>
@@ -199,6 +427,9 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
       <p class="hint">Name two forces and four outcomes.</p>
       <div class="pipeline" id="ownFields" style="grid-template-columns:repeat(2,minmax(0,1fr))"></div>
       <div id="ownDiagram" style="margin-top:12px"></div>
+    </div>
+  </section>
+
     </div>
   </section>
 
@@ -225,11 +456,24 @@ const LAYERS = ["sources","ingest","store","transform","orch","serve","ml","gov"
 const LAYER_NAMES = {sources:"Sources",ingest:"Ingestion",store:"Storage",transform:"Transform",orch:"Orchestration",serve:"Serving",ml:"ML / AI",gov:"Governance"};
 
 const PRESETS = {
-  "Open lakehouse":{platform:"Nexus",sources:"ERP, CRM and IoT sensors",ingest:"Airbyte",store:"Iceberg on S3",transform:"dbt",orch:"Dagster",serve:"Superset",ml:"Feast feature store",gov:"DataHub",team:"the data team",goal:"trusted daily KPIs for every department"},
-  "Cloud warehouse":{platform:"Nexus",sources:"Salesforce, Stripe and the app database",ingest:"Fivetran",store:"Snowflake",transform:"dbt Cloud",orch:"Airflow",serve:"Looker",ml:"Snowpark models",gov:"Atlan",team:"the analytics engineers",goal:"one revenue number everyone agrees on"},
-  "Streaming":{platform:"Nexus",sources:"clickstream and payment events",ingest:"Kafka + Debezium",store:"ClickHouse",transform:"Flink SQL",orch:"Argo Workflows",serve:"Grafana",ml:"real-time fraud scoring",gov:"OpenMetadata",team:"the platform squad",goal:"sub-minute fraud alerts"},
-  "Lean start":{platform:"Nexus",sources:"Postgres and Google Sheets",ingest:"Python cron scripts",store:"Postgres replica",transform:"SQL views",orch:"cron",serve:"Metabase",ml:"a notebook forecast",gov:"a shared README",team:"two engineers",goal:"replace weekly Excel reports"}
+  "Open lakehouse":{platform:"Nexus",sources:"SAP ERP",ingest:"Airbyte",store:"Apache Iceberg",transform:"dbt",orch:"Dagster",serve:"Apache Superset",ml:"Feast",gov:"DataHub",team:"the data team",goal:"trusted daily KPIs for every department"},
+  "Cloud warehouse":{platform:"Nexus",sources:"Salesforce",ingest:"Fivetran",store:"Snowflake",transform:"dbt",orch:"Apache Airflow",serve:"Looker",ml:"Snowpark ML",gov:"Atlan",team:"the analytics engineers",goal:"one revenue number everyone agrees on"},
+  "Streaming":{platform:"Nexus",sources:"Clickstream events",ingest:"Apache Kafka",store:"ClickHouse",transform:"Apache Flink",orch:"Argo Workflows",serve:"Grafana",ml:"MLflow",gov:"OpenMetadata",team:"the platform squad",goal:"sub-minute fraud alerts"},
+  "Lean start":{platform:"Nexus",sources:"PostgreSQL",ingest:"Python scripts",store:"DuckDB",transform:"Plain SQL views",orch:"cron",serve:"Metabase",ml:"Notebooks",gov:"A shared README",team:"two engineers",goal:"replace weekly Excel reports"}
 };
+
+/* Periodic table catalog: [symbol, name, kind, one-line description] per layer */
+const TOOLS = {
+  sources:[["Pg","PostgreSQL","OSS","The default relational database"],["My","MySQL","OSS","Classic web app database"],["Mg","MongoDB","OSS","Document store behind many apps"],["Sp","SAP ERP","SaaS","Orders, stock and finance of record"],["Sf","Salesforce","SaaS","CRM: accounts, leads, pipeline"],["St","Stripe","SaaS","Payments, invoices, subscriptions"],["Gs","Google Sheets","SaaS","Where shadow data lives"],["Io","IoT sensors","Device","High-volume machine telemetry"],["Ce","Clickstream events","Stream","Every tap and page view"],["Ra","REST APIs","Any","Third-party data behind an endpoint"]],
+  ingest:[["Ab","Airbyte","OSS","Open connector catalogue, ELT"],["Fv","Fivetran","SaaS","Managed connectors, zero upkeep"],["Dz","Debezium","OSS","Change data capture from DB logs"],["Kf","Apache Kafka","OSS","The event log everyone streams to"],["Dl","dlt","OSS","Python-first load library"],["Mt","Meltano","OSS","Singer taps with config as code"],["Dm","AWS DMS","Cloud","Managed database migration and CDC"],["Nf","Apache NiFi","OSS","Visual flow-based routing"],["Py","Python scripts","DIY","Cron plus requests plus hope"]],
+  store:[["Sn","Snowflake","SaaS","Cloud warehouse, compute split from storage"],["Bq","BigQuery","Cloud","Serverless warehouse on GCP"],["Dk","Databricks","SaaS","Spark lakehouse platform"],["Ic","Apache Iceberg","OSS","Open table format for lakes"],["De","Delta Lake","OSS","ACID tables on object storage"],["Ch","ClickHouse","OSS","Very fast columnar analytics"],["Rs","Redshift","Cloud","AWS warehouse"],["Du","DuckDB","OSS","In-process analytics, laptop scale"],["Pr","Postgres replica","OSS","A read copy doing warehouse duty"],["Tr","Trino","OSS","Federated SQL over many stores"]],
+  transform:[["Dt","dbt","OSS","SQL models, tests and docs"],["Sq","SQLMesh","OSS","dbt-like with virtual environments"],["Sk","Apache Spark","OSS","Distributed batch processing"],["Fl","Apache Flink","OSS","Stateful stream processing"],["Df","Dataform","Cloud","SQL workflows inside BigQuery"],["Pl","Polars","OSS","Fast DataFrames in Rust"],["Co","Coalesce","SaaS","Visual transformation for Snowflake"],["Sv","Plain SQL views","DIY","Logic in views, no versioning"]],
+  orch:[["Af","Apache Airflow","OSS","The DAG scheduler of record"],["Dg","Dagster","OSS","Asset-based orchestration"],["Pf","Prefect","OSS","Python-native flows"],["Ar","Argo Workflows","OSS","Kubernetes-native pipelines"],["Ks","Kestra","OSS","Declarative YAML workflows"],["Ma","Mage","OSS","Notebook-style pipelines"],["Sx","AWS Step Functions","Cloud","Serverless state machines"],["Cr","cron","DIY","The oldest scheduler alive"]],
+  serve:[["Lk","Looker","SaaS","BI on a semantic model (LookML)"],["Pb","Power BI","SaaS","Microsoft's BI, everywhere in offices"],["Tb","Tableau","SaaS","Visual analytics pioneer"],["Ss","Apache Superset","OSS","Open-source BI and SQL lab"],["Mb","Metabase","OSS","Friendly self-serve questions"],["Gf","Grafana","OSS","Time-series dashboards and alerts"],["Sl","Streamlit","OSS","Data apps in Python"],["Cu","Cube","OSS","Semantic layer and metrics API"],["Ev","Evidence","OSS","Reports written as code"]],
+  ml:[["Ml","MLflow","OSS","Experiment tracking and model registry"],["Fe","Feast","OSS","Feature store, online and offline"],["Sg","SageMaker","Cloud","AWS managed ML platform"],["Vx","Vertex AI","Cloud","GCP managed ML platform"],["Sw","Snowpark ML","SaaS","Python ML inside Snowflake"],["Ry","Ray","OSS","Distributed Python compute"],["Lm","LLM via Claude API","Cloud","Language models over your data"],["Pv","pgvector","OSS","Vector search inside Postgres"],["Nb","Notebooks","DIY","Jupyter, where models are born"]],
+  gov:[["Dh","DataHub","OSS","Metadata catalogue and lineage"],["Om","OpenMetadata","OSS","Catalogue, quality and lineage"],["At","Atlan","SaaS","Active metadata workspace"],["Uc","Unity Catalog","OSS","Governance for lakehouse tables"],["Cb","Collibra","SaaS","Enterprise data governance"],["Ge","Great Expectations","OSS","Data quality tests"],["So","Soda","OSS","Data quality checks as code"],["Mc","Monte Carlo","SaaS","Data observability"],["Rm","A shared README","DIY","Governance by good intentions"]]
+};
+const GROUP_HUE = {sources:"#c2702a",ingest:"#3b8aa0",store:"#4f78b0",transform:"#8a5bb0",orch:"#b0678a",serve:"#5f8f3a",ml:"#a8862a",gov:"#2f7c70"};
 
 /* Diagram specs: compact descriptions rendered by draw() */
 const M = [
@@ -493,10 +737,10 @@ const M = [
 ];
 
 /* ---------- state ---------- */
-const KEY = "nexus-atlas-v1";
+const KEY = "nexus-atlas-v2";
 let state = {preset:"Open lakehouse", vals:{...PRESETS["Open lakehouse"]}, problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
 try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, sec:null, layer:null, search:""}; } catch(e){}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({preset:state.preset, vals:state.vals, problem:state.problem, own:state.own})); } catch(e){} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (tpl, hl=true) => esc(tpl).replace(/\{(\w+)\}/g, (_, k) => {
@@ -717,7 +961,7 @@ function draw(d){
     g+=`<path d="M${cx+14} ${cy-8} A16 16 0 1 1 ${cx-14} ${cy-8}" class="accs"/><path d="M${cx-18} ${cy-14} l4 6 l6 -3" class="accs"/>`;
     break;}
   }
-  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true">${g}</svg>`;
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-hidden="true" data-anim><title>Click to replay</title>${g}</svg>`;
 }
 
 /* ---------- render: stack ---------- */
@@ -725,8 +969,20 @@ const $ = id => document.getElementById(id);
 function renderPresets(){
   $("presets").innerHTML = Object.keys(PRESETS).map(p=>`<button type="button" aria-pressed="${state.preset===p}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
 }
+const known = (k,v) => TOOLS[k] && TOOLS[k].some(t=>t[1]===v);
 function renderFields(){
-  $("fields").innerHTML = FIELDS.map(([k,l,w])=>`<div class="field ${w||""}"><label for="f-${k}">${esc(l)}</label><input id="f-${k}" data-k="${k}" value="${esc(state.vals[k]||"")}"></div>`).join("");
+  $("fields").innerHTML = FIELDS.map(([k,l,w])=>{
+    const v=state.vals[k]||"";
+    if(!TOOLS[k]) return `<div class="field ${w||""}"><label for="f-${k}">${esc(l)}</label><input id="f-${k}" data-k="${k}" value="${esc(v)}"></div>`;
+    const kn=known(k,v);
+    return `<div class="field"><label for="f-${k}">${esc(l)}</label>
+      <select id="f-${k}" data-sel="${k}">${TOOLS[k].map(t=>`<option value="${esc(t[1])}"${t[1]===v?" selected":""}>${esc(t[0])} · ${esc(t[1])}</option>`).join("")}<option value="__other"${kn?"":" selected"}>Other: type your own</option></select>
+      <input id="c-${k}" data-k="${k}" aria-label="${esc(l)}, your own tool" placeholder="Your tool" value="${kn?"":esc(v)}"${kn?" hidden":""}></div>`;
+  }).join("");
+}
+function syncSelects(){
+  LAYERS.forEach(k=>{const sel=$("f-"+k),inp=$("c-"+k);if(!sel)return;const v=state.vals[k]||"",kn=known(k,v);
+    sel.value=kn?v:"__other";inp.hidden=kn;if(!kn&&document.activeElement!==inp)inp.value=v;});
 }
 function renderFlow(){
   const v=state.vals;
@@ -759,6 +1015,7 @@ function renderModels(){
   });
   $("models").innerHTML = html || `<p class="box">No model matches these filters. Clear the search or pick another layer.</p>`;
   $("count").textContent = `Showing ${shown} of ${M.length} models`;
+  animateDiagrams($("models"));
 }
 function renderFilters(){
   $("secFilters").innerHTML = `<button class="chip" type="button" data-sec="" aria-pressed="${!state.sec}">All parts</button>`+Object.entries(SECTIONS).map(([k,s])=>`<button class="chip" type="button" data-sec="${k}" aria-pressed="${state.sec===k}">${esc(s.name)}</button>`).join("");
@@ -791,7 +1048,7 @@ function renderOwnFields(){
   const f=[["x","Axis across"],["y","Axis up"],["q1","Top left"],["q2","Top right"],["q3","Bottom left"],["q4","Bottom right"]];
   $("ownFields").innerHTML=f.map(([k,l])=>`<div class="field"><label for="o-${k}">${l}</label><input id="o-${k}" data-o="${k}" value="${esc(state.own[k]||"")}"></div>`).join("");
 }
-function renderOwn(){const o=state.own;$("ownDiagram").innerHTML=draw({k:"m2",x:(o.x||"")+" →",y:(o.y||"")+" →",q:[o.q1,o.q2,o.q3,o.q4],hi:1});}
+function renderOwn(){const o=state.own;$("ownDiagram").innerHTML=draw({k:"m2",x:(o.x||"")+" →",y:(o.y||"")+" →",q:[o.q1,o.q2,o.q3,o.q4],hi:1});animateDiagrams($("ownDiagram"));}
 
 /* ---------- live updates ---------- */
 function refreshAnalogies(){
@@ -802,17 +1059,302 @@ function refreshAnalogies(){
     c.querySelector(".move").innerHTML=`<b>Move</b>${fill(m.m)}`;
   });
   renderFlow();
+  document.querySelectorAll(".pname").forEach(e=>e.textContent=(state.vals.platform||"").trim()||"your platform");
+  document.querySelectorAll(".pgoal").forEach(e=>e.textContent=(state.vals.goal||"").trim()||"better data");
+  if($("miniScore")) renderMini();
 }
 
-$("legend").innerHTML = Object.values(SECTIONS).map(s=>`<span style="--c:${s.c}">${esc(s.name)}</span>`).join("")+`<span style="--c:var(--accent-soft)">highlighted = your stack</span>`;
 $("samples").innerHTML = SAMPLES.map(s=>`<button class="chip" type="button" data-sample="${esc(s)}">${esc(s)}</button>`).join("");
 $("problem").value = state.problem || SAMPLES[0];
 state.problem = $("problem").value;
 
-renderPresets(); renderFields(); renderFlow(); renderFilters(); renderModels(); renderMatches(); renderOwnFields(); renderOwn();
+/* ---------- periodic table ---------- */
+let detailKey=null;
+function renderTable(){
+  let z=0;
+  $("ptable").innerHTML = LAYERS.map((k,gi)=>`<div class="pt-col" style="--g:${GROUP_HUE[k]}">
+    <div class="pt-gh"><span>G${gi+1}</span>${esc(LAYER_NAMES[k])}</div>
+    ${TOOLS[k].map(t=>{z++;return `<button type="button" class="el" data-k="${k}" data-name="${esc(t[1])}" style="--d:${z*18}ms" aria-pressed="false" title="${esc(t[1])}: ${esc(t[3])}">
+      <span class="z">${z}</span><span class="kind">${esc(t[2])}</span><span class="sym">${esc(t[0])}</span><span class="nm">${esc(t[1])}</span></button>`;}).join("")}
+  </div>`).join("");
+  updateTable();
+}
+function updateTable(react){
+  document.querySelectorAll("#ptable .el").forEach(b=>b.setAttribute("aria-pressed", String(state.vals[b.dataset.k]===b.dataset.name)));
+  const parts=LAYERS.map(k=>{const t=(TOOLS[k].find(t=>t[1]===state.vals[k]));return t?{s:t[0],k,kind:t[2]}:{s:"X",k,kind:"Custom"};});
+  $("formula").innerHTML = parts.map(p=>`<span style="--g:${GROUP_HUE[p.k]}" title="${esc(LAYER_NAMES[p.k])}">${esc(p.s)}</span>`).join("<i>·</i>");
+  const oss=parts.filter(p=>p.kind==="OSS").length, saas=parts.filter(p=>p.kind==="SaaS"||p.kind==="Cloud").length, diy=parts.filter(p=>p.kind==="DIY").length;
+  const verdict = diy>=3?"Volatile: many hand-made parts, expect surprises": saas>=6?"Noble: stable and inert, but pricey to keep": oss>=6?"Reactive: flexible, needs a skilled team to contain": "Balanced compound: a sensible mix";
+  $("stability").textContent = `${oss} open source · ${saas} managed · ${diy} DIY${parts.some(p=>p.kind==="Custom")?" · custom parts":""}. ${verdict}.`;
+  if(react){const f=$("formula");f.classList.remove("react");void f.offsetWidth;f.classList.add("react");}
+}
+function showDetail(btn){
+  const k=btn.dataset.k,t=TOOLS[k].find(t=>t[1]===btn.dataset.name),z=btn.querySelector(".z").textContent;
+  $("ptDetail").style.setProperty("--g",GROUP_HUE[k]);
+  $("ptDetail").innerHTML=`<div class="big"><span class="z">${z}</span><span class="sym">${esc(t[0])}</span></div>
+    <div><h3>${esc(t[1])}</h3><p class="meta">${esc(LAYER_NAMES[k])} · ${esc(t[2])}</p><p>${esc(t[3])}.</p>
+    <p class="meta">${state.vals[k]===t[1]?"In your stack now.":"Click the tile to put it in your stack."}</p></div>`;
+}
+function flash(k){document.querySelectorAll(`#ptable .el[data-k="${k}"][aria-pressed="true"]`).forEach(b=>{b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");});}
+$("ptable").addEventListener("click",e=>{const b=e.target.closest(".el");if(!b)return;state.vals[b.dataset.k]=b.dataset.name;syncSelects();stackChanged();flash(b.dataset.k);showDetail(b);updateTable(true);});
+$("ptable").addEventListener("mouseover",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
+$("ptable").addEventListener("focusin",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
+$("shuffle").addEventListener("click",()=>{LAYERS.forEach(k=>{const l=TOOLS[k];state.vals[k]=l[Math.floor(Math.random()*l.length)][1];});syncSelects();stackChanged();LAYERS.forEach(flash);updateTable(true);});
 
-$("presets").addEventListener("click",e=>{const p=e.target.dataset.p;if(!p)return;state.preset=p;state.vals={...PRESETS[p]};renderPresets();renderFields();refreshAnalogies();save();});
-$("fields").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;state.vals[k]=e.target.value;state.preset=null;renderPresets();refreshAnalogies();save();});
+/* ---------- diagram animation ---------- */
+const io = "IntersectionObserver" in window ? new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add("play");io.unobserve(en.target);}}),{threshold:.35}) : null;
+const SVGNS="http://www.w3.org/2000/svg";
+function animateDiagrams(root){
+  root.querySelectorAll("svg[data-anim]").forEach((svg,si)=>{
+    let i=0, runner=0;
+    svg.querySelectorAll("path,line,polygon,ellipse,circle,rect,text").forEach(el=>{
+      const cls=el.getAttribute("class")||"", dashed=el.hasAttribute("stroke-dasharray")||/ln2/.test(cls);
+      el.style.setProperty("--d",(i++*45)+"ms");
+      if(/\b(ln|accs|tl)\b/.test(cls) && !dashed && /path|line|polygon|ellipse/.test(el.tagName)){el.setAttribute("pathLength","1");el.classList.add("draw");}
+      else if(dashed){el.classList.add("march");}
+      else el.classList.add("pop");
+      if(/\bacc\b/.test(cls)&&el.tagName==="circle") el.classList.add("pulse");
+    });
+    const track=svg.querySelector("path.accs")||svg.querySelector("path.tl");
+    if(track){const id=`trk${si}-${Math.random().toString(36).slice(2,7)}`;track.id=id;
+      const c=document.createElementNS(SVGNS,"circle");c.setAttribute("r","3.6");c.setAttribute("class","runner");
+      c.innerHTML=`<animateMotion dur="${3+((si%4)*.6)}s" repeatCount="indefinite" rotate="auto"><mpath href="#${id}"/></animateMotion>`;svg.appendChild(c);}
+    svg.addEventListener("click",()=>{svg.classList.remove("play");void svg.getBoundingClientRect();svg.classList.add("play");});
+    if(io) io.observe(svg); else svg.classList.add("play");
+  });
+}
+
+/* ---------- storyboard ---------- */
+const DIMS = {rel:"Reliability",cost:"Cost control",speed:"Speed to insight",gov:"Governance & trust",adopt:"Adoption",team:"Team health",future:"Future-proofing"};
+const READ_NEXT = {rel:[31,35,18],cost:[37,3,6],speed:[1,37,9],gov:[8,12,15],adopt:[41,34,38],team:[14,48,21],future:[27,40,20]};
+const SCENES = [
+ {when:"Week 1, Monday",title:"Forty tickets and a burning pipeline",models:[1,37,4],
+  story:"The {ingest} sync from {sources} failed overnight, so the finance dashboard in {serve} is blank. The board meets Thursday. Meanwhile {team} has forty open tickets, the CEO wants a demo of {ml}, and nobody has written a data contract yet.",
+  ask:"What do you do first?",
+  opts:[
+   {t:"Fix the sync now, put data contracts on the calendar, and push one-off CSV requests to self-serve",g:"best",fx:{rel:8,gov:6,team:4},fb:"That is the Eisenhower matrix in one move: urgent and important now, important but not urgent scheduled, urgent but unimportant handed off. Pareto agrees: one pipeline feeds most of what the board reads."},
+   {t:"Work through the tickets in the order they came in",g:"poor",fx:{rel:-4,team:-4,speed:-3},fb:"First in, first out treats every ticket as equally important. The Eisenhower matrix exists because urgent noise crowds out important work."},
+   {t:"Build the {ml} demo; the CEO asked for it",g:"poor",fx:{adopt:2,rel:-6,future:-2},fb:"Impressive but upside down. The data hierarchy puts learning on top of reliable collection, and a demo next to a blank dashboard teaches the board the wrong lesson."}]},
+ {when:"Week 3",title:"Was {store} the right choice?",models:[6,27,16,2],
+  story:"A vendor shows a slick alternative to {store} at a conference. Half of {team} loves it. The other half points out that you just finished migrating. Someone says 'everyone is moving to it'.",
+  ask:"How do you decide whether to switch?",
+  opts:[
+   {t:"Write the hold and pull lists, place the new tool on the hype cycle, and set kill criteria for {store}; revisit only if they trip",g:"best",fx:{future:8,cost:6,team:3},fb:"The rubber band model plus the hype cycle. Writing kill criteria in advance protects you from cognitive dissonance in both directions."},
+   {t:"Switch now; the early bird wins",g:"poor",fx:{future:-2,cost:-6,rel:-5,team:-3},fb:"Buying at the peak of inflated expectations is the classic hype-cycle mistake. The trough comes next, and you would be in it mid-migration."},
+   {t:"Refuse to discuss it; we already chose",g:"ok",fx:{future:-5,team:-2},fb:"Staying may well be right, but defending a choice because you made it is cognitive dissonance. Let evidence decide."}]},
+ {when:"Week 6",title:"The first board report",models:[31,32,8,42],
+  story:"Data now flows from {sources} through {ingest} into {store}, is modelled in {transform}, and lands in {serve}. The CFO will show these numbers to investors. One wrong figure and trust in {platform} is gone.",
+  ask:"How do you protect the number?",
+  opts:[
+   {t:"Layer the defences: a contract at ingestion, tests in {transform}, freshness checks in {orch}, lineage in {gov}",g:"best",fx:{rel:10,gov:8},fb:"The Swiss cheese model: every layer has holes, so stack several and make sure the holes do not line up. Lineage is the family tree that traces a wrong number back to its source."},
+   {t:"One end-to-end check that compares the final total with last month",g:"ok",fx:{rel:3,gov:-1},fb:"A single slice of cheese. It tells you something broke, not where, and misses errors that keep the total plausible."},
+   {t:"Trust the tools; {ingest} and {store} are enterprise grade",g:"poor",fx:{rel:-8,gov:-5},fb:"From where you stand each tool is a black box. Feed known inputs and check the outputs rather than trusting the label."}]},
+ {when:"Month 2",title:"Two revenue numbers",models:[12,11,44,43],
+  story:"Sales shows revenue of Rp 4.2 billion in their {serve} dashboard. Finance shows Rp 3.7 billion. Each team built its own {transform} model and neither wants to give it up.",
+  ask:"How do you settle it?",
+  opts:[
+   {t:"Get both teams in a room, agree it is a consensus decision, then publish 'bookings' and 'recognised revenue' as named, owned metrics in {gov}",g:"best",fx:{gov:10,adopt:6,team:3},fb:"Conflict resolution by collaboration, a decision mode chosen on purpose, and named owners, which turns the status game into a reason to keep the numbers right."},
+   {t:"Average the two and call it revenue",g:"poor",fx:{gov:-8,adopt:-4},fb:"A compromise that serves nobody. The average of two definitions is a third definition that no one owns."},
+   {t:"Finance wins; they are closer to the money",g:"ok",fx:{gov:4,adopt:-4,team:-3},fb:"Competing gets one number quickly, but sales will build a spreadsheet next week. The prisoner's dilemma: hoarding returns when cooperation is not rewarded."}]},
+ {when:"Month 4",title:"Nobody opens the dashboards",models:[41,34,38,29],
+  story:"The analysts love {serve}. Everyone else ignores it. Usage logs show 80% of views come from six people, and the sales director still asks for an Excel file every Monday.",
+  ask:"How do you bring the rest of the company along?",
+  opts:[
+   {t:"Pick one early-majority team, sales, build exactly what they need where they already work, and make them the reference",g:"best",fx:{adopt:12,speed:4},fb:"Crossing the chasm: the early majority wants proof and convenience, not features. Sinus milieus remind you a sales manager is a different user from an analyst."},
+   {t:"Add more charts and features to {serve}",g:"poor",fx:{adopt:-3,cost:-3,team:-2},fb:"Features please the early adopters you already have. The chasm is about trust and fit, not breadth."},
+   {t:"Make {serve} mandatory and switch off the Excel exports",g:"ok",fx:{adopt:3,team:-4,gov:2},fb:"Forced adoption spends goodwill. In the status model, people who lose control push back somewhere else."}]},
+ {when:"Month 6, 3:12 a.m.",title:"The incident",models:[35,21,18,40],
+  story:"{orch} fires the alert again: the nightly load from {sources} failed for the third time this month. The on-call engineer restarts it, like last time. In the morning two people in {team} say they are exhausted.",
+  ask:"What do you change?",
+  opts:[
+   {t:"Add retries and a bigger instance so it stops failing",g:"ok",fx:{rel:3,cost:-3},fb:"Single-loop learning: you fixed the action. It may hold, but a third repeat is the signal to question the design."},
+   {t:"Hold a post-mortem that asks why this is a nightly batch at all, cut the noisiest alerts, and schedule a game day for the 'impossible' failure",g:"best",fx:{rel:10,team:8,future:4},fb:"Double-loop learning questions the assumption, the energy model protects the people, and the unimaginable model turns 'that will never happen' into a drill."},
+   {t:"Ask the team to be more careful on call",g:"poor",fx:{team:-8,rel:-3},fb:"That moves the problem into people's evenings. Burnout is a quadrant of the energy model, not a character flaw."}]},
+ {when:"Month 9",title:"The team doubles",models:[46,48,14,45],
+  story:"{team} grows from four people to nine. Two juniors join the {transform} work, a senior takes over {orch}, and every code review turns into an argument about conventions.",
+  ask:"How do you lead the bigger team?",
+  opts:[
+   {t:"Expect the storming, turn each argument into a written norm, direct the juniors and fully delegate {orch} to the senior",g:"best",fx:{team:12,rel:3,speed:3},fb:"Tuckman's team model expects storming, Hersey-Blanchard leads each person by readiness, and flow matches challenge to skill."},
+   {t:"Manage everyone the same way so it is fair",g:"poor",fx:{team:-6,speed:-3},fb:"Equal treatment is not fair leadership. Situational leadership means directing one person and delegating to another on the same day."},
+   {t:"Let the team self-organise and stay out of it",g:"ok",fx:{team:-2,speed:2},fb:"That works for a performing team. A storming team needs help with norms first; in Drexler-Sibbet terms, trust and goals come before performance."}]},
+ {when:"Year 1",title:"The AI request",models:[27,26,32,39],
+  story:"The board has read about AI and wants {ml} predicting demand from {store} by next quarter. You know half the source tables still have quality gaps.",
+  ask:"What do you promise?",
+  opts:[
+   {t:"A range: simulate the work, say '70% chance of a pilot in two quarters', and spend the first sprint closing the gaps the model needs",g:"best",fx:{future:8,rel:4,adopt:4,cost:2},fb:"Monte Carlo replaces a promise with odds, the data hierarchy puts clean data before learning, and a small proven pilot avoids the personal potential trap."},
+   {t:"Yes, next quarter. Saying no looks weak",g:"poor",fx:{rel:-6,team:-6,adopt:-3},fb:"That buys the peak of the hype cycle with your team's evenings. The gap between promised potential and delivered value becomes the story at year end."},
+   {t:"Not until all the data is perfect",g:"ok",fx:{future:-4,adopt:-3,rel:2},fb:"Perfect never arrives. Take the smallest step that is safe now instead of waiting for the whole pyramid."}]}
+];
+const GRADE_LABEL = {best:"Strong call",ok:"Workable",poor:"Risky"};
+const N_SCENES = SCENES.length + 3; // cover, elements, scenes..., score
+if(state.scene==null) state.scene=0;
+if(!state.answers) state.answers={};
+
+function stackScore(){
+  const out={}; Object.keys(DIMS).forEach(d=>out[d]=50); const why=[];
+  const add=(fx,reason)=>{Object.entries(fx).forEach(([d,v])=>out[d]+=v); why.push({fx,reason});};
+  const KIND={OSS:{cost:4,future:4,team:-2},SaaS:{rel:4,speed:3,cost:-4,future:-1},Cloud:{rel:3,speed:2,cost:-2},DIY:{rel:-5,cost:2,speed:-2,gov:-3,team:-2}};
+  let saas=0;
+  LAYERS.forEach(k=>{const t=TOOLS[k].find(t=>t[1]===state.vals[k]); if(!t||k==="sources") return;
+    if(KIND[t[2]]) add(KIND[t[2]],`${t[1]} is ${t[2]==="DIY"?"hand-made":t[2]==="OSS"?"open source":"managed"}`);
+    if(t[2]==="SaaS"||t[2]==="Cloud") saas++;});
+  const v=state.vals, has=(k,...n)=>n.includes(v[k]);
+  if(has("gov","DataHub","OpenMetadata","Atlan","Unity Catalog","Collibra")) add({gov:8,adopt:2},`${v.gov} gives a catalogue with lineage`);
+  if(has("gov","Great Expectations","Soda","Monte Carlo")) add({rel:6,gov:3},`${v.gov} tests the data itself`);
+  if(has("gov","A shared README")) add({gov:-6},"Governance lives in a README");
+  if(has("transform","dbt","SQLMesh","Dataform","Coalesce")) add({gov:4,rel:3},`${v.transform} versions and tests your models`);
+  if(has("transform","Plain SQL views")) add({gov:-4,rel:-2},"Untested, unversioned SQL views");
+  if(has("orch","cron")) add({rel:-6},"cron has no retries, alerts or lineage");
+  if(has("orch","Dagster")) add({gov:2},"Dagster tracks assets, not just tasks");
+  if(has("serve","Looker","Cube")) add({gov:4,adopt:2},`${v.serve} adds a semantic layer`);
+  if(has("serve","Metabase","Power BI")) add({adopt:4},`${v.serve} is easy for non-analysts`);
+  if(has("ingest","Apache Kafka","Debezium")&&has("transform","Apache Flink")) add({speed:6},"Streaming end to end");
+  if(has("ingest","Apache Kafka","Debezium")&&has("transform","Plain SQL views","dbt")&&has("orch","cron")) add({rel:-3},"Streaming ingest feeding batch-only tools");
+  if(has("store","Snowflake")&&has("ml","Snowpark ML")) add({team:3,speed:2},"ML runs where the data lives");
+  if(has("store","Apache Iceberg","Delta Lake")) add({future:5},"Open table format avoids lock-in");
+  if(has("ml","LLM via Claude API")) add({future:4,cost:-2},"Language models over your data");
+  if(has("ml","Notebooks")) add({future:-2,rel:-2},"Models stay in notebooks");
+  if(saas>=5) add({cost:-6,future:-4},`${saas} managed tools: high bills and lock-in`);
+  const custom=LAYERS.filter(k=>k!=="sources"&&v[k]&&!known(k,v[k]));
+  if(custom.length) why.push({fx:{},reason:`Custom tools (${custom.map(k=>v[k]).join(", ")}) are scored as neutral`});
+  return {out,why};
+}
+function totalScore(){
+  const {out,why}=stackScore();
+  Object.entries(state.answers).forEach(([i,o])=>{const op=SCENES[i]&&SCENES[i].opts[o]; if(op) Object.entries(op.fx).forEach(([d,x])=>out[d]+=x);});
+  Object.keys(out).forEach(d=>out[d]=Math.max(0,Math.min(100,Math.round(out[d]))));
+  const overall=Math.round(Object.values(out).reduce((a,b)=>a+b,0)/7);
+  return {out,why,overall};
+}
+const gradeOf=n=>n>=80?["A","Production-grade"]:n>=70?["B","Solid, a few soft spots"]:n>=60?["C","Works, but fragile"]:n>=50?["D","Held together by people"]:["E","Rethink before you scale"];
+
+function stripItems(){
+  return [{t:"Cover",k:"cover"},{t:"Elements",k:"stack"},...SCENES.map((sc,i)=>({t:sc.title,k:"s",i})),{t:"Score",k:"score"}];
+}
+function renderStrip(){
+  $("strip").innerHTML = stripItems().map((it,i)=>{
+    const a=it.k==="s"?state.answers[it.i]:undefined, g=a!=null?SCENES[it.i].opts[a].g:"";
+    return `<button type="button" class="frame ${g}" data-go="${i}" aria-current="${state.scene===i?"step":"false"}"><span class="fn">${i===0?"◆":i===N_SCENES-1?"★":String(i).padStart(2,"0")}</span><span class="ft">${it.k==="s"?fill(it.t,false):esc(it.t)}</span></button>`;}).join("");
+  $("progBar").style.width = (state.scene/(N_SCENES-1)*100)+"%";
+  $("prev").disabled = state.scene===0;
+  const it=stripItems()[state.scene];
+  $("next").textContent = state.scene===N_SCENES-1 ? "Start over ↺" : it.k==="s"&&state.answers[it.i]==null ? "Skip →" : state.scene===N_SCENES-2 ? "See my score ★" : "Next →";
+}
+function go(i,focus){
+  state.scene=Math.max(0,Math.min(N_SCENES-1,i)); save();
+  ["sc-cover","sc-stack","sc-story","sc-score"].forEach(id=>$(id).hidden=true);
+  const it=stripItems()[state.scene];
+  const el = it.k==="cover"?$("sc-cover"):it.k==="stack"?$("sc-stack"):it.k==="score"?$("sc-score"):$("sc-story");
+  if(it.k==="s") renderStory(it.i);
+  if(it.k==="score") renderScore();
+  if(it.k==="cover") renderCover();
+  el.hidden=false; el.classList.remove("enter"); void el.offsetWidth; el.classList.add("enter");
+  renderStrip();
+  const cur=$("strip").querySelector('[aria-current="step"]'); if(cur&&cur.scrollIntoView) cur.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"});
+  if(focus) $("stage").scrollIntoView({block:"start",behavior:"smooth"});
+}
+function renderCover(){
+  $("coverArt").innerHTML = draw({k:"pyr",items:["Learn","Analyse","Clean","Store","Collect"]});
+  animateDiagrams($("coverArt"));
+}
+function modelArt(n){const m=M[n-1];return `${draw(m.d)}<div class="art-cap"><b>${esc(m.name)}</b><span>${esc(m.sum)}</span><a href="#m${n}" data-open="${n}">Open in the library →</a></div>`;}
+function renderStory(i){
+  const sc=SCENES[i], a=state.answers[i];
+  $("sc-story").innerHTML=`<div class="panel">
+    <div class="art"><div class="art-tabs" role="tablist">${sc.models.map((n,j)=>`<button type="button" role="tab" class="chip" data-art="${n}" aria-selected="${j===0}">${String(n).padStart(2,"0")} ${esc(M[n-1].name.replace(/^The /,""))}</button>`).join("")}</div>
+      <div class="art-box" id="artBox">${modelArt(sc.models[0])}</div></div>
+    <div class="narr">
+      <div class="eyebrow">Scene ${i+1} of ${SCENES.length} · ${esc(sc.when)}</div>
+      <h2>${fill(sc.title,false)}</h2>
+      <p class="story">${fill(sc.story)}</p>
+      <p class="ask">${esc(sc.ask)}</p>
+      <div class="choices" role="radiogroup" aria-label="${esc(sc.ask)}">${sc.opts.map((o,j)=>`<button type="button" role="radio" class="choice ${a===j?o.g:""}" aria-checked="${a===j}" data-opt="${j}" style="--d:${j*90}ms"><span class="key">${"ABC"[j]}</span><span>${fill(o.t,false)}</span></button>`).join("")}</div>
+      <div class="feedback" id="feedback"></div>
+    </div></div>`;
+  animateDiagrams($("artBox"));
+  if(a!=null) showFeedback(i,a,false);
+}
+function showFeedback(i,j,anim=true){
+  const o=SCENES[i].opts[j];
+  $("feedback").className="feedback show "+o.g+(anim?" pop":"");
+  $("feedback").innerHTML=`<div class="verdict">${GRADE_LABEL[o.g]}</div><p>${fill(o.fb,false)}</p><div class="fx">${Object.entries(o.fx).map(([d,v])=>`<span class="${v>0?"up":"down"}">${v>0?"+":""}${v} ${esc(DIMS[d])}</span>`).join("")}</div>`;
+}
+function choose(j){
+  const it=stripItems()[state.scene]; if(it.k!=="s") return;
+  state.answers[it.i]=j; save();
+  document.querySelectorAll("#sc-story .choice").forEach((b,k)=>{b.setAttribute("aria-checked",String(k===j));b.className="choice "+(k===j?SCENES[it.i].opts[j].g:"");});
+  showFeedback(it.i,j); renderStrip(); renderMini();
+}
+function radarSVG(out){
+  const keys=Object.keys(DIMS),cx=150,cy=118,R=86,n=keys.length;
+  const pt=(i,r)=>[(cx+r*Math.sin(2*Math.PI*i/n)).toFixed(1),(cy-r*Math.cos(2*Math.PI*i/n)).toFixed(1)];
+  let g=[.25,.5,.75,1].map(f=>`<polygon points="${keys.map((_,i)=>pt(i,R*f).join(",")).join(" ")}" class="ln2"/>`).join("");
+  g+=keys.map((_,i)=>`<line x1="${cx}" y1="${cy}" x2="${pt(i,R)[0]}" y2="${pt(i,R)[1]}" class="ln2"/>`).join("");
+  g+=`<polygon points="${keys.map((k,i)=>pt(i,R*out[k]/100).join(",")).join(" ")}" class="asoft" opacity=".85"/>`;
+  g+=`<polygon points="${keys.map((k,i)=>pt(i,R*out[k]/100).join(",")).join(" ")}" class="accs"/>`;
+  g+=keys.map((k,i)=>{const [x,y]=pt(i,R*out[k]/100);return `<circle cx="${x}" cy="${y}" r="4" class="acc"/>`;}).join("");
+  g+=keys.map((k,i)=>{const [x,y]=pt(i,R+18);return `<text x="${x}" y="${+y+3}" text-anchor="middle" class="m">${esc(DIMS[k])}</text>`;}).join("");
+  return `<svg viewBox="0 0 300 240" data-anim role="img" aria-label="Score per dimension">${g}</svg>`;
+}
+function renderScore(){
+  const {out,why,overall}=totalScore(), [gl,gt]=gradeOf(overall), answered=Object.keys(state.answers).length;
+  const sorted=Object.keys(out).sort((a,b)=>out[a]-out[b]), weak=sorted.slice(0,2), strong=sorted[sorted.length-1];
+  $("sc-score").innerHTML=`<div class="score">
+    <div class="score-top">
+      <div class="dial"><div class="grade g${gl}">${gl}</div><div><div class="big-num"><span id="countUp">0</span><small>/100</small></div><div class="gt">${esc(gt)}</div>
+        <p class="hint">Architecture effectiveness of ${fill("{platform}",false)}: your stack plus ${answered} of ${SCENES.length} decisions.${answered<SCENES.length?" Unanswered scenes count as neutral.":""}</p></div></div>
+      <div class="radar">${radarSVG(out)}</div>
+    </div>
+    <div class="bars">${Object.keys(DIMS).map((d,i)=>`<div class="bar"><span class="bl">${esc(DIMS[d])}</span><span class="track"><span class="fillb ${out[d]>=70?"good":out[d]<50?"bad":""}" style="--w:${out[d]}%;--d:${i*80}ms"></span></span><span class="bv">${out[d]}</span></div>`).join("")}</div>
+    <div class="score-cols">
+      <div class="box"><h3>From your stack</h3><ul class="why">${why.map(w=>`<li><span>${esc(w.reason)}</span><span class="fxs">${Object.entries(w.fx).map(([d,v])=>`<em class="${v>0?"up":"down"}">${v>0?"+":""}${v} ${esc(DIMS[d].split(" ")[0])}</em>`).join(" ")}</span></li>`).join("")}</ul>
+        <button type="button" class="chip" data-go="1">Change my elements</button></div>
+      <div class="box"><h3>From your decisions</h3><ul class="why">${SCENES.map((sc,i)=>{const a=state.answers[i];return `<li><button type="button" class="linkish" data-go="${i+2}">${fill(sc.title,false)}</button><span class="tag ${a!=null?sc.opts[a].g:""}">${a!=null?GRADE_LABEL[sc.opts[a].g]:"Skipped"}</span></li>`;}).join("")}</ul>
+        <button type="button" class="chip" id="replay">Replay the story</button></div>
+      <div class="box"><h3>Read next</h3><p class="hint">Your weakest dimensions are <b>${esc(DIMS[weak[0]])}</b> and <b>${esc(DIMS[weak[1]])}</b>; strongest is ${esc(DIMS[strong])}.</p>
+        <div class="readnext">${[...new Set([...READ_NEXT[weak[0]],...READ_NEXT[weak[1]]])].map(n=>`<a href="#m${n}" data-open="${n}" class="rn"><span class="n">${String(n).padStart(2,"0")}</span>${esc(M[n-1].name)}<small>${esc(M[n-1].q)}</small></a>`).join("")}</div></div>
+    </div>
+    <p class="hint small">The score is a heuristic for discussion, not a benchmark: managed tools add reliability and cost, open source adds flexibility and upkeep, hand-made parts add risk, and each decision moves the dimensions it touches.</p>
+  </div>`;
+  animateDiagrams($("sc-score"));
+  requestAnimationFrame(()=>$("sc-score").classList.add("grow"));
+  const el=$("countUp"), reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce){el.textContent=overall;} else {const t0=performance.now();const tick=t=>{const p=Math.min(1,(t-t0)/1200);el.textContent=Math.round(overall*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick);};requestAnimationFrame(tick);}
+  $("replay").addEventListener("click",()=>{state.answers={};save();go(2,true);});
+}
+function renderMini(){
+  const {overall}=totalScore();$("miniScore").textContent=overall;$("miniGrade").textContent=gradeOf(overall)[0];
+}
+function openLibrary(n){
+  $("library").hidden=false;$("libToggle").setAttribute("aria-expanded","true");
+  if(n){if(!document.getElementById("m"+n)){state.sec=null;state.layer=null;state.search="";$("search").value="";renderFilters();renderModels();}
+    const c=document.getElementById("m"+n);document.querySelectorAll(".card.hl").forEach(x=>x.classList.remove("hl"));
+    if(c){c.classList.add("hl");c.scrollIntoView({block:"center",behavior:"smooth"});}}
+}
+document.addEventListener("click",e=>{
+  const g=e.target.closest("[data-go]"); if(g){go(+g.dataset.go,true);return;}
+  const o=e.target.closest("[data-open]"); if(o){e.preventDefault();openLibrary(+o.dataset.open);return;}
+  const c=e.target.closest(".choice"); if(c){choose(+c.dataset.opt);return;}
+  const t=e.target.closest("[data-art]"); if(t){document.querySelectorAll("[data-art]").forEach(b=>b.setAttribute("aria-selected",String(b===t)));$("artBox").innerHTML=modelArt(+t.dataset.art);animateDiagrams($("artBox"));}
+});
+$("prev").addEventListener("click",()=>go(state.scene-1));
+$("next").addEventListener("click",()=>{if(state.scene===N_SCENES-1){state.answers={};save();go(0,true);}else go(state.scene+1);});
+$("libToggle").addEventListener("click",()=>{const open=$("library").hidden;$("library").hidden=!open;$("libToggle").setAttribute("aria-expanded",String(open));});
+document.addEventListener("keydown",e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if(e.key==="ArrowRight") go(state.scene+1); else if(e.key==="ArrowLeft") go(state.scene-1);
+  else if(["1","2","3","a","b","c"].includes(e.key.toLowerCase())&&!$("sc-story").hidden) choose("123".includes(e.key)?+e.key-1:"abc".indexOf(e.key.toLowerCase()));
+});
+
+renderTable();
+renderPresets(); renderFields(); renderFlow(); renderFilters(); renderModels(); renderMatches(); renderOwnFields(); renderOwn(); refreshAnalogies(); go(state.scene||0); renderMini();
+
+$("presets").addEventListener("click",e=>{const p=e.target.dataset.p;if(!p)return;state.preset=p;state.vals={...PRESETS[p]};renderPresets();renderFields();refreshAnalogies();updateTable(true);save();});
+function stackChanged(){state.preset=null;renderPresets();refreshAnalogies();updateTable();save();}
+$("fields").addEventListener("input",e=>{const k=e.target.dataset.k;if(!k)return;state.vals[k]=e.target.value;stackChanged();});
+$("fields").addEventListener("change",e=>{const k=e.target.dataset.sel;if(!k)return;const inp=$("c-"+k);
+  if(e.target.value==="__other"){inp.hidden=false;inp.value="";state.vals[k]="";inp.focus();}else{inp.hidden=true;state.vals[k]=e.target.value;}
+  stackChanged();flash(k);});
 $("problem").addEventListener("input",e=>{state.problem=e.target.value;renderMatches();save();});
 $("samples").addEventListener("click",e=>{const s=e.target.dataset.sample;if(!s)return;$("problem").value=s;state.problem=s;renderMatches();save();});
 $("search").addEventListener("input",e=>{state.search=e.target.value;renderModels();});
@@ -820,7 +1362,7 @@ $("secFilters").addEventListener("click",e=>{if(e.target.dataset.sec===undefined
 $("layerFilters").addEventListener("click",e=>{if(e.target.dataset.layer===undefined)return;state.layer=e.target.dataset.layer||null;renderFilters();renderModels();});
 $("matches").addEventListener("click",e=>{const a=e.target.closest("[data-jump]");if(!a)return;
   if(!document.getElementById("m"+a.dataset.jump)){state.sec=null;state.layer=null;state.search="";$("search").value="";renderFilters();renderModels();}});
-$("ownFields").addEventListener("input",e=>{const k=e.target.dataset.o;if(!k)return;state.own[k]=e.target.value;renderOwn();save();});
+$("ownFields").addEventListener("input",e=>{const k=e.target.dataset.o;if(!k)return;state.own[k]=e.target.value;renderOwn();$("ownDiagram").querySelector("svg").classList.add("play","still");save();});
 })();
 </script>
 </body>
