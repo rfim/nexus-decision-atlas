@@ -312,6 +312,10 @@ mark .ti{margin-right:.25em}
 .xchip button:hover{color:#c4473a}
 .xadd{font:12px var(--font-body)!important;padding:3px 8px!important;border-radius:999px!important;width:auto!important;color:var(--muted)!important}
 
+.stack-sum{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px;margin-top:12px}
+.stack-sum .flowline{margin-top:0;flex:1 1 420px;min-width:0}
+.stack-sum .cost-chev{cursor:pointer;flex:none}
+#stackBody{margin-top:12px}
 /* Cost */
 .cost-toggle{width:100%;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;background:none;border:0;padding:0;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .cost-toggle .cost-head{display:block}
@@ -438,14 +442,20 @@ footer{padding-block:36px 48px;color:var(--muted);font-size:13px}
     <div class="scene" id="sc-stack" hidden>
   <section class="stack" aria-labelledby="stack-h">
     <div class="stack-head">
-      <div><div class="eyebrow">Step 1 · Your stack</div><h2 id="stack-h" style="margin-top:6px">Start from a preset or pick each layer</h2></div>
+      <div><div class="eyebrow">Step 1 · Your stack</div><h2 id="stack-h" style="margin-top:6px">Your stack</h2></div>
       <div class="headbtns"><span class="mini" title="Estimated monthly cost">≈ <b id="miniCost">–</b>/mo</span><span class="mini" title="Live architecture score">Score <b id="miniScore">–</b> <i id="miniGrade"></i></span><button type="button" class="chip" id="shuffle">Shuffle a random stack</button></div>
     </div>
-    <p class="hint" style="color:var(--muted);font-size:14px;margin:6px 0 0">Pre-filled with example tools. Replace them with yours; your choices stay in this browser.</p>
+    <p class="hint" style="color:var(--muted);font-size:14px;margin:6px 0 0">Pre-filled with an example. Open Edit stack to pick a preset or each layer, or click elements in the table below. Your choices stay in this browser.</p>
+
+    <div class="stack-sum">
+    <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
+      <button type="button" class="cost-chev" id="stackToggle" aria-expanded="false" aria-controls="stackBody">Edit stack ▾</button>
+    </div>
+    <div id="stackBody" hidden>
     <div class="presets" id="presets" role="group" aria-label="Example stacks"></div>
     <label class="toggle multi"><input type="checkbox" id="multiPick"> Allow several tools per layer <span class="hint">(click a tile again to remove it)</span></label>
     <div class="pipeline" id="fields"></div>
-    <div class="flowline" id="flowline" aria-label="Pipeline summary"></div>
+    </div>
     <div class="costbox" id="costBox"></div>
   </section>
   <section class="box ptable-box" aria-labelledby="pt-h">
@@ -965,7 +975,7 @@ const M = [
 const KEY = "nexus-atlas-v3";
 let state = {multi:true, extra:JSON.parse(JSON.stringify(PRESETS["Open lakehouse"].extra||{})), fit:{team:"mid",budget:"moderate",scale:"medium",latency:"daily",skill:"sql"}, hl:true, rate:16500, preset:"Open lakehouse", vals:(({extra,...r})=>r)(PRESETS["Open lakehouse"]), problem:"", sec:null, layer:null, search:"", own:{x:"Business value",y:"Data readiness",q1:"Prototype",q2:"Build now",q3:"Ignore",q4:"Prepare data"}};
 try { const s = JSON.parse(localStorage.getItem(KEY)||"null"); if (s && s.vals) state = {...state, ...s, fit:{...state.fit,...(s.fit||{})}, sec:null, layer:null, search:""}; } catch(e){}
-const save = () => { try { localStorage.setItem(KEY, JSON.stringify({costOpen:state.costOpen, multi:state.multi, extra:state.extra, fit:state.fit, hl:state.hl, rate:state.rate, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify({stackOpen:state.stackOpen, costOpen:state.costOpen, multi:state.multi, extra:state.extra, fit:state.fit, hl:state.hl, rate:state.rate, preset:state.preset, vals:state.vals, problem:state.problem, own:state.own, scene:state.scene, answers:state.answers})); } catch(e){} };
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fill = (tpl, hl=true) => esc(tpl).replace(/\{(\w+)\}/g, (_, k) => {
@@ -1350,6 +1360,9 @@ function flash(k){document.querySelectorAll(`#ptable .el[data-k="${k}"][aria-pre
 $("ptable").addEventListener("click",e=>{const b=e.target.closest(".el");if(!b)return;togglePick(b.dataset.k,b.dataset.name);syncSelects();stackChanged();flash(b.dataset.k);showDetail(b);updateTable(true);});
 $("ptable").addEventListener("mouseover",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
 $("ptable").addEventListener("focusin",e=>{const b=e.target.closest(".el");if(b)showDetail(b);});
+function syncStackOpen(){$("stackBody").hidden=!state.stackOpen;$("stackToggle").setAttribute("aria-expanded",String(!!state.stackOpen));$("stackToggle").textContent=state.stackOpen?"Done ▴":"Edit stack ▾";}
+syncStackOpen();
+$("stackToggle").addEventListener("click",()=>{state.stackOpen=!state.stackOpen;syncStackOpen();save();});
 $("multiPick").checked=!!state.multi;
 $("multiPick").addEventListener("change",e=>{state.multi=e.target.checked; if(!state.multi){state.extra={};} syncSelects();stackChanged();updateTable();save();});
 $("fitBar").addEventListener("change",e=>{const key=e.target.dataset.fit; if(key){state.fit[key]=e.target.value;} if(e.target.id==="fitHl") state.hl=e.target.checked; updateTable(); renderMini(); renderCost(); save();});
